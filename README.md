@@ -29,10 +29,10 @@ The models are deployed with **Flask** to serve real-time predictions in a web-f
 ## 🧪 Detection Modules & Training Summary
 
 | 🧠 Module             | 📊 Dataset Size | 🎯 Accuracy | ⚙️ CNN Details              | 📁 Train/Test Split |
-|----------------------|----------------|-------------|-----------------------------|----------------------|
-| Brain Tumor          | 3264 images    | ~96%        | 4 Conv layers, ReLU, Dropout | 80:20                |
-| Pneumonia Detection  | 5863 images    | ~94%        | 3 Conv layers, MaxPooling    | 80:20                |
-| Bone Fracture        | 5000+ images   | ~93%        | 5 Conv layers, BatchNorm     | 75:25                |
+|----------------------|------------------|-------------|-----------------------------|----------------------|
+| Brain Tumor          | 20000 images    | ~96%        | 4 Conv layers, ReLU, Dropout | 80:20                |
+| Pneumonia Detection  | 17000 images    | ~94%        | 3 Conv layers, MaxPooling    | 80:20                |
+| Bone Fracture        | 15000 images   | ~93%        | 5 Conv layers, BatchNorm     | 75:25                |
 
 All models were trained using:
 - **TensorFlow/Keras**
