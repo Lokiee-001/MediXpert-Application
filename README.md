@@ -181,6 +181,12 @@ You are free to use, modify, and share with attribution.
 ***NOTE***
 “In machine learning, nothing is truly wasted — every failed attempt teaches the model to succeed better.” ***so It consists of some extra practiced files***
 
+ 🙏 Thank You
 
+Thank you for exploring MediXpert!
+This project reflects my passion for combining healthcare and artificial intelligence to make diagnostic tools more accessible and intelligent.
 
-                                                                   ***Thank You***
+If you find this useful or inspiring, feel free to ⭐ star the repository, suggest improvements, or connect with me on LinkedIn.
+
+                                                                   
+                                                         
