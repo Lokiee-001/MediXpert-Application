@@ -72,38 +72,31 @@ All models were trained using:
 1️⃣ Clone the Repository
 
 
-bash
-Copy
-Edit
+
+
 git clone https://github.com/your-username/MediXpert.git
 cd MediXpert
 2️⃣ Install Dependencies
 
 
-bash
-Copy
-Edit
+
+
 pip install -r requirements.txt
 3️⃣ Run the Flask Application
 
 
-bash
-Copy
-Edit
+
+
 python app.py
 4️⃣ Open in Your Browser
 
 
-cpp
-Copy
-Edit
+
 http://127.0.0.1:5000
 📁 Project Structure
 
 
-php
-Copy
-Edit
+
 MediXpert/
 ├── app.py                       # Flask main application
 
@@ -145,6 +138,8 @@ Lokeshwar L (B.Tech CSE)
 💡 Passionate about healthcare, AI, and impactful problem solving.
 
 📢 Notes & Credits
+
+
 This project was developed as a research-based diagnostic assistant.
 
 Several variations of models and file versions may exist in the repository from past testing and iterations.
@@ -153,9 +148,9 @@ Datasets are sourced from trusted public datasets:
 
 Brain Tumor Dataset (Kaggle)
 
-Chest X-ray Dataset (NIH)
+Chest X-ray Dataset (Kaggle)
 
-MURA Dataset (Stanford)
+Bone Dataset (Kaggle)
 
 📜 License
 This project is licensed under the MIT License.
@@ -166,3 +161,7 @@ You are free to use, modify, and share with attribution.
 
 ***NOTE***
 “In machine learning, nothing is truly wasted — every failed attempt teaches the model to succeed better.” ***so It consists of some extra practiced files***
+
+
+
+                                                                                                 **Thank You**
