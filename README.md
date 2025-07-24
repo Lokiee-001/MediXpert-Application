@@ -69,6 +69,8 @@ All models were trained using:
 ---
 
 🚀 How to Run MediXpert Locally
+
+
 1️⃣ Clone the Repository
 
 
@@ -76,28 +78,42 @@ All models were trained using:
 
 git clone https://github.com/your-username/MediXpert.git
 cd MediXpert
+
+
+
 2️⃣ Install Dependencies
 
 
 
 
 pip install -r requirements.txt
+
+
+
 3️⃣ Run the Flask Application
 
 
 
 
 python app.py
+
+
+
 4️⃣ Open in Your Browser
 
 
 
 http://127.0.0.1:5000
+
+
+
 📁 Project Structure
 
 
 
 MediXpert/
+
+
 ├── app.py                       # Flask main application
 
 
@@ -137,6 +153,9 @@ Lokeshwar L (B.Tech CSE)
 
 💡 Passionate about healthcare, AI, and impactful problem solving.
 
+
+
+
 📢 Notes & Credits
 
 
@@ -164,4 +183,4 @@ You are free to use, modify, and share with attribution.
 
 
 
-                                                                                                 **Thank You**
+                                                                                         ***Thank You***
