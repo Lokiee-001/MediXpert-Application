@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection Result - mediXpert</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: #eef2f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            color: #0056b3;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .result-box {
+            background: #f8f9fc;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .advice-box {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            text-align: left;
+        }
+        .advice-box h2 {
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+        a {
+            display: inline-block;
+            text-decoration: none;
+            background: linear-gradient(135deg, #007BFF, #0056b3);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 5px;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+        a:hover {
+            background: linear-gradient(135deg, #0056b3, #003d7a);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-check-circle"></i> Detection Result</h1>
+        <div class="result-box">
+            <p><strong>Analysis:</strong> {{ message }}</p>
+        </div>
+        {% if image_url %}
+            <img src="{{ image_url }}" alt="Uploaded Image">
+        {% else %}
+            <div class="advice-box">
+                <h2>Precautionary Advice</h2>
+                <p><strong>Stay Healthy:</strong> Regular check-ups and early diagnosis can prevent serious health issues. Maintain a balanced diet, exercise, and avoid smoking.</p>
+                <p><strong>Consult a Doctor:</strong> If you experience symptoms, seek medical attention immediately.</p>
+            </div>
+        {% endif %}
+        <div class="button-container">
+            <a href="/">⬅ Back to Upload</a>
+        </div>
+    </div>
+</body>
+</html>

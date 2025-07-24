@@ -1,0 +1,2431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediXpert - AI Medical Image Detection</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- AOS (Animate On Scroll) -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Styles integrated from the refined version -->
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --dark-color: #121212;
+            --light-color: #f8f9fc;
+            --text-color: #333;
+            --text-light: #f0f0f0;
+            --theme-name: 'default';
+            --primary-color-rgb: 46, 204, 113; /* Added for dynamic use */
+        }
+
+        /* Neon Theme Variables */
+        :root.neon-theme {
+            --primary-color: #0ff0fc;
+            --secondary-color: #07b6d4;
+            --dark-color: #0a0a1a;
+            --light-color: #1a1a2a;
+            --text-color: #e0e0ff;
+            --text-light: #ffffff;
+            --theme-name: 'neon';
+            --primary-color-rgb: 15, 240, 252;
+        }
+
+        /* Dark Theme Variables */
+        :root.dark-theme {
+            --primary-color: #2ecc71; /* Keep green for contrast or change */
+            --secondary-color: #27ae60;
+            --dark-color: #121212;
+            --light-color: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-light: #ffffff;
+            --theme-name: 'dark';
+            --primary-color-rgb: 46, 204, 113;
+        }
+
+        /* Ocean Theme Variables */
+        :root.ocean-theme {
+            --primary-color: #00b4d8;
+            --secondary-color: #0077b6;
+            --dark-color: #03045e;
+            --light-color: #caf0f8;
+            --text-color: #023e8a;
+            --text-light: #ffffff;
+            --theme-name: 'ocean';
+            --primary-color-rgb: 0, 180, 216;
+        }
+
+        /* Sunset Theme Variables */
+        :root.sunset-theme {
+            --primary-color: #ff7e5f;
+            --secondary-color: #feb47b;
+            --dark-color: #2c3e50;
+            --light-color: #f8f1e5;
+            --text-color: #34495e;
+            --text-light: #ffffff;
+            --theme-name: 'sunset';
+            --primary-color-rgb: 255, 126, 95;
+        }
+
+        /* Royal Theme Variables */
+        :root.royal-theme {
+            --primary-color: #6a3093;
+            --secondary-color: #a044ff;
+            --dark-color: #242582;
+            --light-color: #f8f1ff;
+            --text-color: #553d67;
+            --text-light: #ffffff;
+            --theme-name: 'royal';
+            --primary-color-rgb: 106, 48, 147;
+        }
+
+        /* Minimal Theme Variables */
+        :root.minimal-theme {
+            --primary-color: #333333;
+            --secondary-color: #666666;
+            --dark-color: #111111;
+            --light-color: #f9f9f9;
+            --text-color: #444444;
+            --text-light: #ffffff;
+            --theme-name: 'minimal';
+            --primary-color-rgb: 51, 51, 51;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f4f8, #e0eaf2);
+            min-height: 100vh;
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Theme-specific body backgrounds */
+        body.neon-theme { background: linear-gradient(135deg, #0a0a1a, #1a1a2a); color: var(--text-color); }
+        body.dark-theme { background: linear-gradient(135deg, #121212, #1a1a1a); color: var(--text-color); }
+        body.ocean-theme { background: linear-gradient(135deg, #caf0f8, #90e0ef); color: var(--text-color); }
+        body.sunset-theme { background: linear-gradient(135deg, #f8f1e5, #f9d5bb); color: var(--text-color); }
+        body.royal-theme { background: linear-gradient(135deg, #f8f1ff, #e2c6ff); color: var(--text-color); }
+        body.minimal-theme { background: linear-gradient(135deg, #f9f9f9, #e9e9e9); color: var(--text-color); }
+
+
+        /* Clock Styles */
+        .clock-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 10px 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .dark-theme .clock-container,
+        .neon-theme .clock-container { background: rgba(30, 30, 30, 0.9); color: var(--text-light); }
+        .ocean-theme .clock-container { background: rgba(202, 240, 248, 0.9); color: var(--text-color); }
+        .sunset-theme .clock-container { background: rgba(248, 241, 229, 0.9); color: var(--text-color); }
+        .royal-theme .clock-container { background: rgba(248, 241, 255, 0.9); color: var(--text-color); }
+        .minimal-theme .clock-container { background: rgba(249, 249, 249, 0.9); color: var(--text-color); }
+
+        .time {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+
+        .date {
+            font-size: 0.8rem;
+            margin-top: 3px;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+        .dark-theme .date,
+        .neon-theme .date { color: var(--text-light); }
+
+
+        /* Cinematic Intro */
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            transition: background 0.3s ease;
+        }
+
+        .intro-logo {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        .intro-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            margin-bottom: 1rem;
+        }
+
+        .intro-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dark-theme .navbar { background: rgba(30, 30, 30, 0.95); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
+        .neon-theme .navbar { background: rgba(10, 10, 26, 0.95); box-shadow: 0 4px 20px rgba(15, 240, 252, 0.1); }
+        .ocean-theme .navbar { background: rgba(202, 240, 248, 0.95); box-shadow: 0 4px 20px rgba(0, 180, 216, 0.1); }
+        .sunset-theme .navbar { background: rgba(248, 241, 229, 0.95); box-shadow: 0 4px 20px rgba(255, 126, 95, 0.1); }
+        .royal-theme .navbar { background: rgba(248, 241, 255, 0.95); box-shadow: 0 4px 20px rgba(106, 48, 147, 0.1); }
+        .minimal-theme .navbar { background: rgba(249, 249, 249, 0.95); box-shadow: 0 4px 20px rgba(51, 51, 51, 0.1); }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-brand i { margin-right: 10px; }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-color) !important;
+            position: relative;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+        .dark-theme .nav-link,
+        .neon-theme .nav-link { color: var(--text-light) !important; }
+
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after { width: 100%; } /* Ensure active link underline is visible */
+
+        /* Main Content */
+        .main-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            margin: 30px auto;
+            padding: 30px;
+            overflow: hidden;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dark-theme .main-container { background: rgba(30, 30, 30, 0.9); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); }
+        .neon-theme .main-container { background: rgba(26, 26, 42, 0.9); box-shadow: 0 8px 30px rgba(15, 240, 252, 0.1); }
+        .ocean-theme .main-container { background: rgba(255, 255, 255, 0.9); box-shadow: 0 8px 30px rgba(0, 180, 216, 0.1); }
+        .sunset-theme .main-container { background: rgba(255, 255, 255, 0.9); box-shadow: 0 8px 30px rgba(255, 126, 95, 0.1); }
+        .royal-theme .main-container { background: rgba(255, 255, 255, 0.9); box-shadow: 0 8px 30px rgba(106, 48, 147, 0.1); }
+        .minimal-theme .main-container { background: rgba(255, 255, 255, 0.9); box-shadow: 0 8px 30px rgba(51, 51, 51, 0.1); }
+
+        .section-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            transition: color 0.3s ease;
+        }
+
+        .section-title i { margin-right: 10px; }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px;
+            transition: width 0.4s ease, background 0.3s ease;
+        }
+
+        .section-title:hover::after { width: 100%; }
+
+        /* Tabs */
+        .nav-tabs {
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 30px;
+            justify-content: center;
+            transition: border-bottom-color 0.3s ease;
+        }
+
+        .dark-theme .nav-tabs { border-bottom-color: #444; }
+        .neon-theme .nav-tabs { border-bottom-color: rgba(15, 240, 252, 0.2); }
+        .ocean-theme .nav-tabs { border-bottom-color: rgba(0, 180, 216, 0.2); }
+        .sunset-theme .nav-tabs { border-bottom-color: rgba(255, 126, 95, 0.2); }
+        .royal-theme .nav-tabs { border-bottom-color: rgba(106, 48, 147, 0.2); }
+        .minimal-theme .nav-tabs { border-bottom-color: rgba(51, 51, 51, 0.2); }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: #555;
+            font-weight: 500;
+            padding: 15px;
+            margin: 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-width: 150px;
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 3px solid transparent; /* Start with transparent border */
+        }
+
+        .dark-theme .nav-tabs .nav-link { color: #aaa; }
+        .neon-theme .nav-tabs .nav-link { color: #e0e0ff; }
+        .ocean-theme .nav-tabs .nav-link { color: #023e8a; }
+        .sunset-theme .nav-tabs .nav-link { color: #34495e; }
+        .royal-theme .nav-tabs .nav-link { color: #553d67; }
+        .minimal-theme .nav-tabs .nav-link { color: #444444; }
+
+        .nav-tabs .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0; /* Align effect with bottom border */
+            left: 0;
+            width: 100%;
+            height: 100%; /* Cover full height for background effect */
+            background: rgba(var(--primary-color-rgb), 0.1); /* Use dynamic RGB */
+            transform: scaleY(0); /* Scale vertically from bottom */
+            transform-origin: bottom;
+            transition: transform 0.3s ease, background 0.3s ease;
+            z-index: -1;
+            border-radius: 5px 5px 0 0; /* Optional: slight curve */
+        }
+
+
+        .nav-tabs .nav-link:hover, .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+             border-bottom-color: var(--primary-color); /* Make bottom border visible */
+        }
+
+        .nav-tabs .nav-link:hover::before, .nav-tabs .nav-link.active::before {
+            transform: scaleY(1); /* Animate background fill on hover/active */
+        }
+
+        .tab-caption {
+            display: block;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .dark-theme .tab-caption { color: #aaa; }
+        .neon-theme .tab-caption { color: #b0b0ff; }
+        .ocean-theme .tab-caption { color: #0077b6; }
+        .sunset-theme .tab-caption { color: #b37b5f; } /* Adjusted for better contrast */
+        .royal-theme .tab-caption { color: #a044ff; }
+        .minimal-theme .tab-caption { color: #666666; }
+
+        /* Upload Section */
+        .upload-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .upload-section { background: #2a2a2a; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); color: var(--text-light); }
+        .neon-theme .upload-section { background: #1e1e2e; box-shadow: 0 4px 15px rgba(15, 240, 252, 0.1); color: var(--text-light); }
+        .ocean-theme .upload-section { background: white; box-shadow: 0 4px 15px rgba(0, 180, 216, 0.1); color: var(--text-color); }
+        .sunset-theme .upload-section { background: white; box-shadow: 0 4px 15px rgba(255, 126, 95, 0.1); color: var(--text-color); }
+        .royal-theme .upload-section { background: white; box-shadow: 0 4px 15px rgba(106, 48, 147, 0.1); color: var(--text-color); }
+        .minimal-theme .upload-section { background: white; box-shadow: 0 4px 15px rgba(51, 51, 51, 0.1); color: var(--text-color); }
+
+        .upload-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .dark-theme .upload-section:hover { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35); }
+        .neon-theme .upload-section:hover { box-shadow: 0 10px 25px rgba(15, 240, 252, 0.2); }
+        .ocean-theme .upload-section:hover { box-shadow: 0 10px 25px rgba(0, 180, 216, 0.2); }
+        .sunset-theme .upload-section:hover { box-shadow: 0 10px 25px rgba(255, 126, 95, 0.2); }
+        .royal-theme .upload-section:hover { box-shadow: 0 10px 25px rgba(106, 48, 147, 0.2); }
+        .minimal-theme .upload-section:hover { box-shadow: 0 10px 25px rgba(51, 51, 51, 0.2); }
+
+
+        .form-control {
+            padding: 12px;
+            border-radius: 8px;
+            /* margin-top: 15px; <- Handled by label */
+            transition: all 0.3s ease;
+            background: #fff; /* Default background */
+            color: var(--text-color); /* Default text color */
+            border: 1px solid #ced4da; /* Default border */
+        }
+        .form-label {
+            margin-bottom: 5px; /* Spacing between label and input */
+            font-weight: 500;
+        }
+
+        .dark-theme .form-control { background: #333; border-color: #444; color: var(--text-light); }
+        .neon-theme .form-control { background: #2a2a3a; border-color: rgba(15, 240, 252, 0.3); color: var(--text-light); }
+        .ocean-theme .form-control { background: white; border-color: rgba(0, 180, 216, 0.3); color: var(--text-color); }
+        .sunset-theme .form-control { background: white; border-color: rgba(255, 126, 95, 0.3); color: var(--text-color); }
+        .royal-theme .form-control { background: white; border-color: rgba(106, 48, 147, 0.3); color: var(--text-color); }
+        .minimal-theme .form-control { background: white; border-color: rgba(51, 51, 51, 0.3); color: var(--text-color); }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.3); /* Use dynamic RGB */
+        }
+
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            color: white; /* Ensure text is visible */
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.15); /* Subtle overlay effect */
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+            z-index: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(var(--primary-color-rgb), 0.3); /* Use dynamic RGB */
+        }
+        .btn-primary:hover::before { transform: scaleX(1); }
+
+
+        .btn-primary:active { transform: translateY(1px); }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9998;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transition: background 0.3s ease, color 0.3s ease;
+            color: #333; /* Default text color */
+        }
+
+        .dark-theme .loading-content { background: #2a2a2a; color: var(--text-light); }
+        .neon-theme .loading-content { background: #1e1e2e; color: var(--text-light); }
+        .ocean-theme .loading-content { background: white; color: var(--text-color); }
+        .sunset-theme .loading-content { background: white; color: var(--text-color); }
+        .royal-theme .loading-content { background: white; color: var(--text-color); }
+        .minimal-theme .loading-content { background: white; color: var(--text-color); }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+            transition: border-color 0.3s ease, border-top-color 0.3s ease;
+        }
+
+        .dark-theme .loading-spinner { border-color: #444; border-top-color: var(--primary-color); }
+        .neon-theme .loading-spinner { border-color: rgba(15, 240, 252, 0.2); border-top-color: var(--primary-color); }
+
+        .progress-bar {
+            background-color: var(--primary-color);
+            transition: background-color 0.3s ease, width 0.2s ease-out !important; /* Smooth progress */
+        }
+
+        /* Image Preview */
+        .image-preview {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px; /* Ensure space */
+            height: 100%; /* Try to match height of upload section */
+            transition: all 0.3s ease;
+            color: var(--text-color); /* Default text color */
+            position: relative; /* For error messages */
+        }
+        .image-preview p.text-muted { color: #6c757d; margin: 0; } /* Muted text */
+
+        .dark-theme .image-preview { background: #2a2a2a; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); color: var(--text-light); }
+        .dark-theme .image-preview p.text-muted { color: #aaa; }
+        .neon-theme .image-preview { background: #1e1e2e; box-shadow: 0 4px 15px rgba(15, 240, 252, 0.1); color: var(--text-light); }
+        .neon-theme .image-preview p.text-muted { color: #b0b0ff; }
+        .ocean-theme .image-preview { background: white; box-shadow: 0 4px 15px rgba(0, 180, 216, 0.1); color: var(--text-color); }
+        .sunset-theme .image-preview { background: white; box-shadow: 0 4px 15px rgba(255, 126, 95, 0.1); color: var(--text-color); }
+        .royal-theme .image-preview { background: white; box-shadow: 0 4px 15px rgba(106, 48, 147, 0.1); color: var(--text-color); }
+        .minimal-theme .image-preview { background: white; box-shadow: 0 4px 15px rgba(51, 51, 51, 0.1); color: var(--text-color); }
+
+        .image-preview:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .dark-theme .image-preview:hover { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35); }
+        .neon-theme .image-preview:hover { box-shadow: 0 10px 25px rgba(15, 240, 252, 0.2); }
+        .ocean-theme .image-preview:hover { box-shadow: 0 10px 25px rgba(0, 180, 216, 0.2); }
+        .sunset-theme .image-preview:hover { box-shadow: 0 10px 25px rgba(255, 126, 95, 0.2); }
+        .royal-theme .image-preview:hover { box-shadow: 0 10px 25px rgba(106, 48, 147, 0.2); }
+        .minimal-theme .image-preview:hover { box-shadow: 0 10px 25px rgba(51, 51, 51, 0.2); }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 300px; /* Adjust as needed */
+            border-radius: 8px;
+            transition: transform 0.4s ease;
+            object-fit: contain; /* Ensure image fits well */
+            animation: fadeIn 0.5s ease-out; /* Added fade-in */
+        }
+
+        .image-preview:hover img { transform: scale(1.02); }
+
+        /* Result Section */
+        .result-section {
+            background: var(--light-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            color: var(--text-color); /* Default text color */
+        }
+
+        .dark-theme .result-section { background: #2a2a2a; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); color: var(--text-light); }
+        .neon-theme .result-section { background: #1e1e2e; box-shadow: 0 4px 15px rgba(15, 240, 252, 0.1); color: var(--text-light); }
+        .ocean-theme .result-section { background: #caf0f8; box-shadow: 0 4px 15px rgba(0, 180, 216, 0.1); color: var(--text-color); }
+        .sunset-theme .result-section { background: #f8f1e5; box-shadow: 0 4px 15px rgba(255, 126, 95, 0.1); color: var(--text-color); }
+        .royal-theme .result-section { background: #f8f1ff; box-shadow: 0 4px 15px rgba(106, 48, 147, 0.1); color: var(--text-color); }
+        .minimal-theme .result-section { background: #f9f9f9; box-shadow: 0 4px 15px rgba(51, 51, 51, 0.1); color: var(--text-color); }
+
+        .result-section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        .dark-theme .result-section:hover { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); }
+        .neon-theme .result-section:hover { box-shadow: 0 10px 30px rgba(15, 240, 252, 0.2); }
+        .ocean-theme .result-section:hover { box-shadow: 0 10px 30px rgba(0, 180, 216, 0.2); }
+        .sunset-theme .result-section:hover { box-shadow: 0 10px 30px rgba(255, 126, 95, 0.2); }
+        .royal-theme .result-section:hover { box-shadow: 0 10px 30px rgba(106, 48, 147, 0.2); }
+        .minimal-theme .result-section:hover { box-shadow: 0 10px 30px rgba(51, 51, 51, 0.2); }
+
+
+        .result-image-container {
+            max-width: 100%;
+            margin-bottom: 30px;
+            text-align: center; /* Center image if container is wider */
+        }
+
+        .result-image-container img {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            object-fit: contain; /* Ensure image fits well */
+            animation: fadeIn 0.5s ease-out; /* Added fade-in */
+        }
+
+        .dark-theme .result-image-container img { box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); }
+        .neon-theme .result-image-container img { box-shadow: 0 5px 15px rgba(15, 240, 252, 0.1); }
+        .ocean-theme .result-image-container img { box-shadow: 0 5px 15px rgba(0, 180, 216, 0.1); }
+        .sunset-theme .result-image-container img { box-shadow: 0 5px 15px rgba(255, 126, 95, 0.1); }
+        .royal-theme .result-image-container img { box-shadow: 0 5px 15px rgba(106, 48, 147, 0.1); }
+        .minimal-theme .result-image-container img { box-shadow: 0 5px 15px rgba(51, 51, 51, 0.1); }
+
+        .result-image-container:hover img {
+            transform: scale(1.02);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .dark-theme .result-image-container:hover img { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35); }
+        .neon-theme .result-image-container:hover img { box-shadow: 0 10px 25px rgba(15, 240, 252, 0.2); }
+        .ocean-theme .result-image-container:hover img { box-shadow: 0 10px 25px rgba(0, 180, 216, 0.2); }
+        .sunset-theme .result-image-container:hover img { box-shadow: 0 10px 25px rgba(255, 126, 95, 0.2); }
+        .royal-theme .result-image-container:hover img { box-shadow: 0 10px 25px rgba(106, 48, 147, 0.2); }
+        .minimal-theme .result-image-container:hover img { box-shadow: 0 10px 25px rgba(51, 51, 51, 0.2); }
+
+        .result-details p {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .result-details p::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-size: 20px;
+            transition: color 0.3s ease;
+            line-height: 1; /* Align bullet better */
+        }
+
+        .result-details strong {
+            color: var(--primary-color);
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .recommendations, .precautions {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .recommendations,
+        .dark-theme .precautions { background: #2a2a2a; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); }
+        .neon-theme .recommendations,
+        .neon-theme .precautions { background: #1e1e2e; box-shadow: 0 4px 10px rgba(15, 240, 252, 0.1); }
+        .ocean-theme .recommendations,
+        .ocean-theme .precautions { background: white; box-shadow: 0 4px 10px rgba(0, 180, 216, 0.1); }
+        .sunset-theme .recommendations,
+        .sunset-theme .precautions { background: white; box-shadow: 0 4px 10px rgba(255, 126, 95, 0.1); }
+        .royal-theme .recommendations,
+        .royal-theme .precautions { background: white; box-shadow: 0 4px 10px rgba(106, 48, 147, 0.1); }
+        .minimal-theme .recommendations,
+        .minimal-theme .precautions { background: white; box-shadow: 0 4px 10px rgba(51, 51, 51, 0.1); }
+
+        .recommendations:hover, .precautions:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        .dark-theme .recommendations:hover, .dark-theme .precautions:hover { box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); }
+        .neon-theme .recommendations:hover, .neon-theme .precautions:hover { box-shadow: 0 8px 20px rgba(15, 240, 252, 0.2); }
+        .ocean-theme .recommendations:hover, .ocean-theme .precautions:hover { box-shadow: 0 8px 20px rgba(0, 180, 216, 0.2); }
+        .sunset-theme .recommendations:hover, .sunset-theme .precautions:hover { box-shadow: 0 8px 20px rgba(255, 126, 95, 0.2); }
+        .royal-theme .recommendations:hover, .royal-theme .precautions:hover { box-shadow: 0 8px 20px rgba(106, 48, 147, 0.2); }
+        .minimal-theme .recommendations:hover, .minimal-theme .precautions:hover { box-shadow: 0 8px 20px rgba(51, 51, 51, 0.2); }
+
+        .recommendations h3, .precautions h3 {
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.1rem; /* Slightly smaller heading */
+            transition: color 0.3s ease;
+        }
+
+        .recommendations h3 i, .precautions h3 i { margin-right: 10px; }
+
+        .recommendations ul, .precautions ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 0; /* Remove default bottom margin */
+        }
+
+        .recommendations li, .precautions li {
+            padding-left: 25px;
+            position: relative;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            line-height: 1.5;
+        }
+        .recommendations li:last-child, .precautions li:last-child { margin-bottom: 0; } /* Remove margin from last item */
+
+
+        .recommendations li::before, .precautions li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        /* How It Works & Other Cards*/
+        .step-card, .team-card, .about-section .step-card, .contact-section .step-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            height: 100%; /* Ensures cards in a row have same height */
+            display: flex; /* Use flexbox for alignment */
+            flex-direction: column; /* Stack content vertically */
+            position: relative;
+            overflow: hidden;
+            color: var(--text-color); /* Default text color */
+        }
+        .step-card p, .team-card p, .about-section .step-card p, .contact-section .step-card p {
+             color: #6c757d; /* Muted text */
+             flex-grow: 1; /* Allow paragraph to take space */
+             margin-bottom: 1rem; /* Ensure spacing */
+        }
+        .step-card h3, .team-card h3, .about-section .step-card h3, .contact-section .step-card h3 {
+             color: var(--text-color);
+             transition: color 0.3s ease;
+             margin-bottom: 0.75rem; /* Spacing below heading */
+        }
+         .dark-theme .step-card p, .dark-theme .team-card p, .dark-theme .about-section .step-card p, .dark-theme .contact-section .step-card p { color: #aaa; }
+         .dark-theme .step-card h3, .dark-theme .team-card h3, .dark-theme .about-section .step-card h3, .dark-theme .contact-section .step-card h3 { color: var(--text-light); }
+         .neon-theme .step-card p, .neon-theme .team-card p, .neon-theme .about-section .step-card p, .neon-theme .contact-section .step-card p { color: #b0b0ff; }
+         .neon-theme .step-card h3, .neon-theme .team-card h3, .neon-theme .about-section .step-card h3, .neon-theme .contact-section .step-card h3 { color: var(--text-light); }
+
+        .dark-theme .step-card, .dark-theme .team-card, .dark-theme .about-section .step-card, .dark-theme .contact-section .step-card { background: #2a2a2a; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); color: var(--text-light); }
+        .neon-theme .step-card, .neon-theme .team-card, .neon-theme .about-section .step-card, .neon-theme .contact-section .step-card { background: #1e1e2e; box-shadow: 0 4px 15px rgba(15, 240, 252, 0.1); color: var(--text-light); }
+        .ocean-theme .step-card, .ocean-theme .team-card, .ocean-theme .about-section .step-card, .ocean-theme .contact-section .step-card { background: white; box-shadow: 0 4px 15px rgba(0, 180, 216, 0.1); color: var(--text-color); }
+        .sunset-theme .step-card, .sunset-theme .team-card, .sunset-theme .about-section .step-card, .sunset-theme .contact-section .step-card { background: white; box-shadow: 0 4px 15px rgba(255, 126, 95, 0.1); color: var(--text-color); }
+        .royal-theme .step-card, .royal-theme .team-card, .royal-theme .about-section .step-card, .royal-theme .contact-section .step-card { background: white; box-shadow: 0 4px 15px rgba(106, 48, 147, 0.1); color: var(--text-color); }
+        .minimal-theme .step-card, .minimal-theme .team-card, .minimal-theme .about-section .step-card, .minimal-theme .contact-section .step-card { background: white; box-shadow: 0 4px 15px rgba(51, 51, 51, 0.1); color: var(--text-color); }
+
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease, background 0.3s ease;
+        }
+
+        .step-card:hover, .team-card:hover, .about-section .step-card:hover, .contact-section .step-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15); /* Adjusted default shadow */
+        }
+        .dark-theme .step-card:hover, .dark-theme .team-card:hover, .dark-theme .about-section .step-card:hover, .dark-theme .contact-section .step-card:hover { box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4); }
+        .neon-theme .step-card:hover, .neon-theme .team-card:hover, .neon-theme .about-section .step-card:hover, .neon-theme .contact-section .step-card:hover { box-shadow: 0 15px 30px rgba(15, 240, 252, 0.2); }
+        .ocean-theme .step-card:hover, .ocean-theme .team-card:hover, .ocean-theme .about-section .step-card:hover, .ocean-theme .contact-section .step-card:hover { box-shadow: 0 15px 30px rgba(0, 180, 216, 0.2); }
+        .sunset-theme .step-card:hover, .sunset-theme .team-card:hover, .sunset-theme .about-section .step-card:hover, .sunset-theme .contact-section .step-card:hover { box-shadow: 0 15px 30px rgba(255, 126, 95, 0.2); }
+        .royal-theme .step-card:hover, .royal-theme .team-card:hover, .royal-theme .about-section .step-card:hover, .royal-theme .contact-section .step-card:hover { box-shadow: 0 15px 30px rgba(106, 48, 147, 0.2); }
+        .minimal-theme .step-card:hover, .minimal-theme .team-card:hover, .minimal-theme .about-section .step-card:hover, .minimal-theme .contact-section .step-card:hover { box-shadow: 0 15px 30px rgba(51, 51, 51, 0.2); }
+
+        .step-card:hover::before { transform: scaleX(1); }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            transition: background 0.3s ease;
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+
+        /* Team Section Specific */
+        .team-card { text-align: center; }
+        .team-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            margin: 0 auto 15px;
+            transition: all 0.3s ease;
+             flex-shrink: 0;
+        }
+        .team-card:hover .team-img { transform: scale(1.1); border-color: var(--secondary-color); }
+        .team-card .mt-3 { margin-top: auto !important; } /* Push social icons to bottom */
+
+        .social-icon {
+            display: inline-flex;
+            width: 40px; /* Slightly smaller */
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white !important; /* Ensure icon color is white */
+            align-items: center;
+            justify-content: center;
+            margin: 0 5px; /* Closer spacing */
+            transition: all 0.3s ease;
+            font-size: 0.9rem; /* Smaller icon */
+            text-decoration: none; /* Remove underline from links */
+        }
+        .social-icon:hover { background: var(--secondary-color); transform: translateY(-3px); color: white !important; }
+        .dark-theme .social-icon { background: #444; }
+        .dark-theme .social-icon:hover { background: #555; }
+        .neon-theme .social-icon { background: var(--primary-color); }
+        .neon-theme .social-icon:hover { background: var(--secondary-color); }
+        .ocean-theme .social-icon, .sunset-theme .social-icon, .royal-theme .social-icon, .minimal-theme .social-icon {
+            background: var(--primary-color);
+        }
+        .ocean-theme .social-icon:hover, .sunset-theme .social-icon:hover, .royal-theme .social-icon:hover, .minimal-theme .social-icon:hover {
+            background: var(--secondary-color);
+        }
+
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 60px 0 30px;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.3s ease;
+        }
+
+        /* SVG wave styling */
+        footer::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: -1px; /* Slight overlap */
+            width: 100%;
+            height: 80px; /* Wave height */
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center top;
+            /* Dynamic wave color based on body background */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23f0f4f8' fill-opacity='1' d='M0,160L48,176C96,192,192,224,288,218.7C384,213,480,171,576,149.3C672,128,768,128,864,149.3C960,171,1056,213,1152,224C1248,235,1344,213,1392,202.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z'%3E%3C/path%3E%3C/svg%3E");
+        }
+
+         /* Theme specific footer wave fills */
+         body.dark-theme footer::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%231a1a1a' fill-opacity='1' d='M0,160L48,176C96,192,192,224,288,218.7C384,213,480,171,576,149.3C672,128,768,128,864,149.3C960,171,1056,213,1152,224C1248,235,1344,213,1392,202.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z'%3E%3C/path%3E%3C/svg%3E"); }
+         body.neon-theme footer::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%231a1a2a' fill-opacity='1' d='M0,160L48,176C96,192,192,224,288,218.7C384,213,480,171,576,149.3C672,128,768,128,864,149.3C960,171,1056,213,1152,224C1248,235,1344,213,1392,202.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z'%3E%3C/path%3E%3C/svg%3E"); }
+         body.ocean-theme footer::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2390e0ef' fill-opacity='1' d='M0,160L48,176C96,192,192,224,288,218.7C384,213,480,171,576,149.3C672,128,768,128,864,149.3C960,171,1056,213,1152,224C1248,235,1344,213,1392,202.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z'%3E%3C/path%3E%3C/svg%3E"); }
+         body.sunset-theme footer::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23f9d5bb' fill-opacity='1' d='M0,160L48,176C96,192,192,224,288,218.7C384,213,480,171,576,149.3C672,128,768,128,864,149.3C960,171,1056,213,1152,224C1248,235,1344,213,1392,202.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z'%3E%3C/path%3E%3C/svg%3E"); }
+         body.royal-theme footer::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23e2c6ff' fill-opacity='1' d='M0,160L48,176C96,192,192,224,288,218.7C384,213,480,171,576,149.3C672,128,768,128,864,149.3C960,171,1056,213,1152,224C1248,235,1344,213,1392,202.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z'%3E%3C/path%3E%3C/svg%3E"); }
+         body.minimal-theme footer::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23e9e9e9' fill-opacity='1' d='M0,160L48,176C96,192,192,224,288,218.7C384,213,480,171,576,149.3C672,128,768,128,864,149.3C960,171,1056,213,1152,224C1248,235,1344,213,1392,202.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z'%3E%3C/path%3E%3C/svg%3E"); }
+
+
+        footer .social-icon {
+            background: rgba(255, 255, 255, 0.1);
+            color: white !important;
+            width: 50px; /* Larger icons in footer */
+            height: 50px;
+            font-size: 1.2rem;
+        }
+
+        footer .social-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px) scale(1.1);
+        }
+
+        /* Theme Dropdown */
+        .dropdown-menu {
+            background-color: white; /* Default background */
+            border: 1px solid rgba(0,0,0,.15);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.175);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+             padding: 0.5rem 0; /* Standard Bootstrap padding */
+        }
+        .dropdown-item {
+            color: #333;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            padding: 0.5rem 1.5rem; /* Standard Bootstrap padding */
+            display: flex;
+            align-items: center;
+            font-weight: 400;
+        }
+        .dropdown-item:hover, .dropdown-item:focus { background-color: #f8f9fa; }
+        .dropdown-item i {
+             color: var(--primary-color);
+             transition: color 0.3s ease;
+             width: 20px; /* Ensure icons align */
+             text-align: center; /* Center icon */
+             margin-right: 10px; /* Space between icon and text */
+        }
+        .dropdown-item.active, .dropdown-item:active {
+            background-color: rgba(var(--primary-color-rgb), 0.1); /* Use dynamic RGB */
+            color: var(--primary-color); /* Highlight text */
+            font-weight: 500; /* Make active item slightly bolder */
+        }
+
+        .dark-theme .dropdown-menu { background-color: #343a40; border-color: rgba(255,255,255,.15); }
+        .dark-theme .dropdown-item { color: #f8f9fa; }
+        .dark-theme .dropdown-item:hover, .dark-theme .dropdown-item:focus { background-color: #495057; }
+        .dark-theme .dropdown-item i { color: var(--primary-color); }
+        .dark-theme .dropdown-item.active, .dark-theme .dropdown-item:active { background-color: rgba(var(--primary-color-rgb), 0.2); color: var(--primary-color); }
+
+        .neon-theme .dropdown-menu { background-color: #1e1e2e; border-color: rgba(var(--primary-color-rgb), 0.3); }
+        .neon-theme .dropdown-item { color: #e0e0ff; }
+        .neon-theme .dropdown-item:hover, .neon-theme .dropdown-item:focus { background-color: #2a2a3a; }
+        .neon-theme .dropdown-item i { color: var(--primary-color); }
+        .neon-theme .dropdown-item.active, .neon-theme .dropdown-item:active { background-color: rgba(var(--primary-color-rgb), 0.1); color: var(--primary-color); }
+
+         .ocean-theme .dropdown-menu { background-color: #e6f7ff; border-color: rgba(var(--primary-color-rgb), 0.3); }
+         .ocean-theme .dropdown-item { color: #023e8a; }
+         .ocean-theme .dropdown-item:hover, .ocean-theme .dropdown-item:focus { background-color: #caf0f8; }
+         .ocean-theme .dropdown-item i { color: var(--primary-color); }
+         .ocean-theme .dropdown-item.active, .ocean-theme .dropdown-item:active { background-color: rgba(var(--primary-color-rgb), 0.1); color: var(--primary-color); }
+
+         .sunset-theme .dropdown-menu { background-color: #fff5f0; border-color: rgba(var(--primary-color-rgb), 0.3); }
+         .sunset-theme .dropdown-item { color: #34495e; }
+         .sunset-theme .dropdown-item:hover, .sunset-theme .dropdown-item:focus { background-color: #ffe8d6; }
+         .sunset-theme .dropdown-item i { color: var(--primary-color); }
+         .sunset-theme .dropdown-item.active, .sunset-theme .dropdown-item:active { background-color: rgba(var(--primary-color-rgb), 0.1); color: var(--primary-color); }
+
+         .royal-theme .dropdown-menu { background-color: #f5f0ff; border-color: rgba(var(--primary-color-rgb), 0.3); }
+         .royal-theme .dropdown-item { color: #553d67; }
+         .royal-theme .dropdown-item:hover, .royal-theme .dropdown-item:focus { background-color: #e8dfff; }
+         .royal-theme .dropdown-item i { color: var(--primary-color); }
+         .royal-theme .dropdown-item.active, .royal-theme .dropdown-item:active { background-color: rgba(var(--primary-color-rgb), 0.1); color: var(--primary-color); }
+
+         .minimal-theme .dropdown-menu { background-color: #f0f0f0; border-color: rgba(var(--primary-color-rgb), 0.3); }
+         .minimal-theme .dropdown-item { color: #444; }
+         .minimal-theme .dropdown-item:hover, .minimal-theme .dropdown-item:focus { background-color: #e0e0e0; }
+         .minimal-theme .dropdown-item i { color: var(--primary-color); }
+         .minimal-theme .dropdown-item.active, .minimal-theme .dropdown-item:active { background-color: rgba(var(--primary-color-rgb), 0.1); color: var(--primary-color); }
+
+
+        /* Floating AI Assistant */
+        .ai-assistant {
+            position: fixed;
+            bottom: 30px; /* Adjusted position */
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .ai-assistant:hover { transform: scale(1.1); }
+
+        .ai-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--primary-color); /* Use primary color for pulse */
+            animation: pulse-ai 2s infinite ease-out;
+            opacity: 0.6;
+            z-index: -1; /* Behind the icon */
+            transition: background 0.3s ease;
+        }
+
+        /* Chat Modal */
+        .chat-modal {
+            position: fixed;
+            bottom: 110px; /* Position above AI assistant */
+            right: 30px;
+            width: 350px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            transform: translateY(20px) scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column; /* Ensure vertical layout */
+            max-height: 70vh; /* Limit height */
+            overflow: hidden; /* Prevent content overflow */
+        }
+
+        .dark-theme .chat-modal { background: #2a2a2a; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
+        .neon-theme .chat-modal { background: #1e1e2e; box-shadow: 0 10px 30px rgba(15, 240, 252, 0.2); }
+        .ocean-theme .chat-modal { background: white; box-shadow: 0 10px 30px rgba(0, 180, 216, 0.2); }
+        .sunset-theme .chat-modal { background: white; box-shadow: 0 10px 30px rgba(255, 126, 95, 0.2); }
+        .royal-theme .chat-modal { background: white; box-shadow: 0 10px 30px rgba(106, 48, 147, 0.2); }
+        .minimal-theme .chat-modal { background: white; box-shadow: 0 10px 30px rgba(51, 51, 51, 0.2); }
+
+        .chat-modal.active {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .chat-header {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0; /* Prevent header from shrinking */
+            transition: background 0.3s ease;
+        }
+         .chat-header i.fa-robot { margin-right: 10px; }
+
+        .chat-title {
+            font-weight: 500;
+            flex-grow: 1;
+            font-size: 1rem; /* Adjust size */
+        }
+
+        .close-chat {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+             padding: 0; /* Remove padding */
+             line-height: 1; /* Align icon */
+        }
+        .close-chat:hover { opacity: 1; }
+
+        .chat-body {
+            padding: 15px; /* Slightly less padding */
+            flex-grow: 1; /* Allow body to take remaining space */
+            overflow-y: auto; /* Enable scrolling */
+            background-color: var(--light-color); /* Match theme */
+            transition: background-color 0.3s ease;
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: var(--primary-color) rgba(var(--primary-color-rgb), 0.1); /* Firefox */
+        }
+        /* Webkit scrollbar styling */
+        .chat-body::-webkit-scrollbar { width: 8px; }
+        .chat-body::-webkit-scrollbar-track { background: rgba(var(--primary-color-rgb), 0.05); border-radius: 10px; }
+        .chat-body::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+        .chat-body::-webkit-scrollbar-thumb:hover { background-color: var(--secondary-color); }
+
+
+        .dark-theme .chat-body { background-color: #1e1e1e; }
+        .neon-theme .chat-body { background-color: #1a1a2a; }
+        .ocean-theme .chat-body { background-color: #e6f7ff; }
+        .sunset-theme .chat-body { background-color: #fff5f0; }
+        .royal-theme .chat-body { background-color: #f5f0ff; }
+        .minimal-theme .chat-body { background-color: #f0f0f0; }
+
+        .chat-message {
+            margin-bottom: 15px;
+            display: flex;
+            animation: fadeIn 0.3s ease-out; /* Add fade-in to messages */
+        }
+        .chat-message:last-child { margin-bottom: 0; }
+
+        .chat-message.ai { justify-content: flex-start; }
+        .chat-message.user { justify-content: flex-end; }
+        .chat-message.error { justify-content: center; } /* Center error messages */
+
+        .message-content {
+            max-width: 85%; /* Slightly wider */
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word; /* Prevent long words from overflowing */
+            transition: background-color 0.3s ease, color 0.3s ease;
+            white-space: pre-wrap; /* Respect newlines from AI */
+        }
+
+        .ai .message-content {
+            background: #e9ecef; /* Default AI background */
+            border-top-left-radius: 5px;
+            color: #333; /* Default AI text color */
+        }
+
+        .dark-theme .ai .message-content { background: #333; color: var(--text-light); }
+        .neon-theme .ai .message-content { background: #2a2a3a; color: var(--text-light); }
+        .ocean-theme .ai .message-content { background: #d0ebf5; color: var(--text-color); }
+        .sunset-theme .ai .message-content { background: #ffe8d6; color: var(--text-color); }
+        .royal-theme .ai .message-content { background: #e8dfff; color: var(--text-color); }
+        .minimal-theme .ai .message-content { background: #e0e0e0; color: var(--text-color); }
+
+
+        .user .message-content {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-top-right-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .error .message-content {
+            background: #f8d7da; /* Error background */
+            color: #721c24; /* Error text color */
+            border: 1px solid #f5c6cb; /* Error border */
+            text-align: center;
+            font-style: italic;
+            max-width: 95%; /* Wider error message */
+            border-radius: 8px; /* Less pronounced radius for errors */
+        }
+        .dark-theme .error .message-content { background: #572023; color: #f8d7da; border-color: #8c2f34;}
+        .neon-theme .error .message-content { background: #4d1b1e; color: #f8d7da; border-color: #7f2a2d;}
+        /* Add more theme adjustments for errors if needed */
+
+        .chat-input {
+            display: flex;
+            align-items: center; /* Align items vertically */
+            padding: 15px; /* More padding */
+            border-top: 1px solid #eee;
+            flex-shrink: 0; /* Prevent input from shrinking */
+            background-color: white; /* Ensure consistent background */
+            border-radius: 0 0 20px 20px; /* Match modal bottom radius */
+            transition: border-top-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .dark-theme .chat-input { border-top-color: #444; background-color: #2a2a2a; }
+        .neon-theme .chat-input { border-top-color: rgba(15, 240, 252, 0.2); background-color: #1e1e2e; }
+        .ocean-theme .chat-input { border-top-color: rgba(0, 180, 216, 0.2); background-color: white; }
+        .sunset-theme .chat-input { border-top-color: rgba(255, 126, 95, 0.2); background-color: white; }
+        .royal-theme .chat-input { border-top-color: rgba(106, 48, 147, 0.2); background-color: white; }
+        .minimal-theme .chat-input { border-top-color: rgba(51, 51, 51, 0.2); background-color: white; }
+
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            margin-right: 10px;
+            outline: none;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+             height: 40px; /* Match button height */
+        }
+
+        .dark-theme .chat-input input { background: #333; border-color: #444; color: var(--text-light); }
+        .neon-theme .chat-input input { background: #2a2a3a; border-color: rgba(15, 240, 252, 0.3); color: var(--text-light); }
+        .ocean-theme .chat-input input { background: white; border-color: rgba(0, 180, 216, 0.3); color: var(--text-color); }
+        .sunset-theme .chat-input input { background: white; border-color: rgba(255, 126, 95, 0.3); color: var(--text-color); }
+        .royal-theme .chat-input input { background: white; border-color: rgba(106, 48, 147, 0.3); color: var(--text-color); }
+        .minimal-theme .chat-input input { background: white; border-color: rgba(51, 51, 51, 0.3); color: var(--text-color); }
+
+        .chat-input input:focus { border-color: var(--primary-color); }
+
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0; /* Prevent button shrinking */
+        }
+
+        .send-btn:hover { transform: scale(1.1); opacity: 0.9; }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: scale(1); background: #ccc; } /* Style for disabled state */
+        .send-btn .spinner-border { width: 1rem; height: 1rem; border-width: .2em; } /* Style spinner */
+
+
+        /* AI Assistant Chat Box within Result Section */
+        .ai-assistant-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            color: var(--text-color);
+        }
+
+        .dark-theme .ai-assistant-box { background: #2a2a2a; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); color: var(--text-light); }
+        .neon-theme .ai-assistant-box { background: #1e1e2e; box-shadow: 0 4px 15px rgba(15, 240, 252, 0.1); color: var(--text-light); }
+        .ocean-theme .ai-assistant-box { background: white; box-shadow: 0 4px 15px rgba(0, 180, 216, 0.1); color: var(--text-color); }
+        .sunset-theme .ai-assistant-box { background: white; box-shadow: 0 4px 15px rgba(255, 126, 95, 0.1); color: var(--text-color); }
+        .royal-theme .ai-assistant-box { background: white; box-shadow: 0 4px 15px rgba(106, 48, 147, 0.1); color: var(--text-color); }
+        .minimal-theme .ai-assistant-box { background: white; box-shadow: 0 4px 15px rgba(51, 51, 51, 0.1); color: var(--text-color); }
+
+        .ai-assistant-box h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .ai-assistant-box h3 i { margin-right: 10px; }
+
+        #chat-box {
+            height: 250px; /* Increased height */
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px; /* More padding */
+            margin-bottom: 15px;
+            background: #f8f9fa; /* Default background */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+             scrollbar-width: thin; /* Firefox */
+             scrollbar-color: var(--primary-color) rgba(var(--primary-color-rgb), 0.1); /* Firefox */
+        }
+        /* Webkit scrollbar styling for result chat */
+        #chat-box::-webkit-scrollbar { width: 8px; }
+        #chat-box::-webkit-scrollbar-track { background: rgba(var(--primary-color-rgb), 0.05); border-radius: 10px; }
+        #chat-box::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+        #chat-box::-webkit-scrollbar-thumb:hover { background-color: var(--secondary-color); }
+
+
+        .dark-theme #chat-box { background: #333; border-color: #444; }
+        .neon-theme #chat-box { background: #2a2a3a; border-color: rgba(15, 240, 252, 0.3); }
+        .ocean-theme #chat-box { background: #e6f7ff; border-color: rgba(0, 180, 216, 0.3); }
+        .sunset-theme #chat-box { background: #fff5f0; border-color: rgba(255, 126, 95, 0.3); }
+        .royal-theme #chat-box { background: #f5f0ff; border-color: rgba(106, 48, 147, 0.3); }
+        .minimal-theme #chat-box { background: #f0f0f0; border-color: rgba(51, 51, 51, 0.3); }
+
+        #chat-box .chat-message { /* Reuse chat-message class structure */
+            margin-bottom: 10px;
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+        #chat-box .chat-message:last-child { margin-bottom: 0; }
+
+        #chat-box .chat-message.user { justify-content: flex-end; }
+        #chat-box .chat-message.ai { justify-content: flex-start; }
+        #chat-box .chat-message.error { justify-content: center; }
+
+
+        #chat-box .message-content { /* Reuse message-content class */
+            max-width: 85%;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+             transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Apply theme styles for result chat box messages */
+        #chat-box .ai .message-content {
+            background: #e9ecef; border-top-left-radius: 5px; color: #333;
+        }
+        .dark-theme #chat-box .ai .message-content { background: #333; color: var(--text-light); }
+        .neon-theme #chat-box .ai .message-content { background: #2a2a3a; color: var(--text-light); }
+        .ocean-theme #chat-box .ai .message-content { background: #d0ebf5; color: var(--text-color); }
+        .sunset-theme #chat-box .ai .message-content { background: #ffe8d6; color: var(--text-color); }
+        .royal-theme #chat-box .ai .message-content { background: #e8dfff; color: var(--text-color); }
+        .minimal-theme #chat-box .ai .message-content { background: #e0e0e0; color: var(--text-color); }
+
+        #chat-box .user .message-content {
+             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+             color: white; border-top-right-radius: 5px;
+             transition: background 0.3s ease;
+        }
+
+        #chat-box .error .message-content {
+            background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;
+            text-align: center; font-style: italic; max-width: 95%; border-radius: 8px;
+        }
+        .dark-theme #chat-box .error .message-content { background: #572023; color: #f8d7da; border-color: #8c2f34;}
+        .neon-theme #chat-box .error .message-content { background: #4d1b1e; color: #f8d7da; border-color: #7f2a2d;}
+
+        /* Input group for result chat */
+        .ai-assistant-box .input-group {
+            display: flex; /* Use flexbox */
+        }
+        .ai-assistant-box .input-group input.form-control {
+            flex-grow: 1; /* Input takes available space */
+            margin-top: 0; /* Override form-control margin */
+             border-radius: 50px 0 0 50px; /* Rounded left */
+             height: 40px;
+        }
+        .ai-assistant-box .input-group button {
+             width: auto; /* Adjust button width */
+             border-radius: 0 50px 50px 0; /* Rounded right */
+             padding: 0 15px; /* Adjust padding */
+             margin-top: 0; /* Override btn margin */
+             height: 40px; /* Match input height */
+             flex-shrink: 0;
+        }
+         .ai-assistant-box .input-group button .spinner-border { width: 1rem; height: 1rem; border-width: .2em; }
+
+        /* Animations */
+        @keyframes pulse { /* Original intro pulse */
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes pulse-ai { /* Specific for AI assistant */
+            0% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.4); opacity: 0; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes float { /* Optional: remove if GSAP handles it */
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Fade in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .intro-title { font-size: 2.5rem; }
+            .intro-subtitle { font-size: 1.2rem; }
+            .nav-tabs .nav-link { min-width: auto; padding: 10px 10px; }
+        }
+
+        @media (max-width: 768px) {
+            .intro-title { font-size: 2rem; }
+            .intro-subtitle { font-size: 1rem; }
+            .nav-tabs .nav-link { font-size: 0.9rem; padding: 10px 5px; }
+            .main-container { padding: 20px; margin: 15px auto; }
+            .chat-modal { width: calc(100% - 40px); right: 20px; bottom: 100px; max-height: 65vh;}
+            .ai-assistant { right: 20px; bottom: 20px; width: 55px; height: 55px; font-size: 1.3rem; }
+            .clock-container { top: 15px; right: 15px; padding: 8px 12px; }
+            .time { font-size: 1rem; }
+            .date { font-size: 0.7rem; }
+             /* Stack result image and text on medium screens and below */
+            .result-section .row { flex-direction: column; }
+            .result-image-container { margin-bottom: 20px; }
+            .result-details { text-align: center; } /* Center details text */
+            .recommendations, .precautions { text-align: left; } /* Keep list text left aligned */
+             .ai-assistant-box { padding: 15px; }
+             #chat-box { height: 200px; }
+        }
+
+        @media (max-width: 576px) {
+            .intro-title { font-size: 1.8rem; }
+            .navbar-brand { font-size: 1.2rem; }
+            .section-title { font-size: 1.5rem; }
+
+            .nav-tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                justify-content: flex-start;
+                -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+                scrollbar-width: none; /* Hide scrollbar Firefox */
+            }
+             .nav-tabs::-webkit-scrollbar { display: none; } /* Hide scrollbar Chrome/Safari */
+
+            .nav-tabs .nav-link {
+                font-size: 0.8rem;
+                padding: 8px 10px; /* Adjusted padding */
+                min-width: 120px;
+                white-space: nowrap; /* Prevent wrapping */
+            }
+
+            .tab-caption { display: none; } /* Hide caption on small screens */
+            .ai-assistant { right: 20px; bottom: 20px; width: 50px; height: 50px; font-size: 1.2rem; }
+            .chat-modal { bottom: 90px; right: 20px; width: calc(100% - 40px); max-height: 60vh; }
+            .result-details p { padding-left: 15px; }
+            .result-details p::before { font-size: 18px; }
+             footer::before { height: 60px; } /* Adjust wave height */
+             .upload-section, .image-preview { min-height: 250px; } /* Adjust height */
+             .image-preview img { max-height: 200px; }
+              #chat-box { height: 180px; padding: 10px; }
+              .ai-assistant-box .input-group input.form-control { height: 38px; }
+              .ai-assistant-box .input-group button { height: 38px; padding: 0 12px;}
+
+        }
+    </style>
+</head>
+<body class="default-theme"> <!-- Start with default theme -->
+
+    <!-- Clock Display -->
+
+
+    <!-- Cinematic Intro -->
+    <div class="intro-overlay animate__animated animate__fadeOut animate__delay-3s">
+        <div class="intro-logo animate__animated animate__fadeInDown animate__delay-0.5s">
+            <i class="fas fa-stethoscope"></i>
+        </div>
+        <h1 class="intro-title animate__animated animate__fadeInUp animate__delay-1s">MediXpert</h1>
+        <p class="intro-subtitle animate__animated animate__fadeInUp animate__delay-1.5s">AI-Powered Medical Image Analysis</p>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h4>Analyzing Image</h4>
+            <p>Please wait while our AI processes your medical image...</p>
+            <div class="progress mt-3" style="height: 10px;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-stethoscope"></i> MediXpert
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home">Home</a> <!-- Add active class -->
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#team">Team</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-palette"></i> Theme
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown">
+                             <li><a class="dropdown-item" href="#" onclick="setTheme('default')"><i class="fas fa-leaf"></i> Default</a></li>
+                             <li><a class="dropdown-item" href="#" onclick="setTheme('dark')"><i class="fas fa-moon"></i> Dark</a></li>
+                             <li><a class="dropdown-item" href="#" onclick="setTheme('neon')"><i class="fas fa-lightbulb"></i> Neon</a></li>
+                             <li><a class="dropdown-item" href="#" onclick="setTheme('ocean')"><i class="fas fa-water"></i> Ocean</a></li>
+                             <li><a class="dropdown-item" href="#" onclick="setTheme('sunset')"><i class="fas fa-sun"></i> Sunset</a></li>
+                             <li><a class="dropdown-item" href="#" onclick="setTheme('royal')"><i class="fas fa-crown"></i> Royal</a></li>
+                             <li><a class="dropdown-item" href="#" onclick="setTheme('minimal')"><i class="fas fa-border-style"></i> Minimal</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="main-container" id="home">
+            <h1 class="section-title text-center mb-3" data-aos="fade-up">
+                <i class="fas fa-brain"></i> MediXpert AI Analysis
+            </h1>
+            <p class="text-center mb-5 lead" data-aos="fade-up" data-aos-delay="100" style="max-width: 800px; margin-left: auto; margin-right: auto;">
+                Upload your medical scans to get rapid, AI-powered preliminary analysis for brain tumors, pneumonia, or bone fractures.
+            </p>
+
+            <!-- Placeholder for dynamic messages (e.g., from backend/Flask flash messages) -->
+            <div id="flashMessageContainer">
+                 {% with messages = get_flashed_messages(with_categories=true) %}
+                     {% if messages %}
+                         {% for category, message in messages %}
+                             <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" data-aos="fade-down">
+                                 {{ message }}
+                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                             </div>
+                         {% endfor %}
+                     {% endif %}
+                 {% endwith %}
+            </div>
+
+            <!-- Tabs for Detection Types -->
+            <ul class="nav nav-tabs" id="myTab" role="tablist" data-aos="fade-up" data-aos-delay="200">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="brain-tab" data-bs-toggle="tab" data-bs-target="#brain-pane" type="button" role="tab" aria-controls="brain-pane" aria-selected="true">
+                        <i class="fas fa-brain me-1"></i> Brain Tumor
+                        <span class="tab-caption d-none d-md-block">MRI Scan Analysis</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="lungs-tab" data-bs-toggle="tab" data-bs-target="#lungs-pane" type="button" role="tab" aria-controls="lungs-pane" aria-selected="false">
+                        <i class="fas fa-lungs me-1"></i> Pneumonia
+                        <span class="tab-caption d-none d-md-block">Chest X-Ray Analysis</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="bone-tab" data-bs-toggle="tab" data-bs-target="#bone-pane" type="button" role="tab" aria-controls="bone-pane" aria-selected="false">
+                        <i class="fas fa-bone me-1"></i> Bone Fracture
+                        <span class="tab-caption d-none d-md-block">X-Ray Analysis</span>
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="myTabContent">
+                <!-- Brain Tumor Detection Pane -->
+                <div class="tab-pane fade show active" id="brain-pane" role="tabpanel" aria-labelledby="brain-tab" data-aos="fade-up">
+                    <h2 class="section-title mt-4">
+                        <i class="fas fa-brain"></i> Brain Tumor Detection
+                    </h2>
+                    <p class="mb-4">Detect potential brain tumors with precision. Upload an MRI scan to analyze for abnormalities using our advanced AI.</p>
+                    <div class="row align-items-stretch">
+                        <div class="col-lg-6 mb-4 d-flex" data-aos="fade-right" data-aos-delay="100">
+                            <div class="upload-section w-100">
+                                <form action="/upload_brain" method="post" enctype="multipart/form-data" id="brainForm" onsubmit="return showLoading('brainForm');">
+                                    <label for="brain_file" class="form-label">Upload Brain MRI Scan (png, jpg, jpeg):</label>
+                                    <input type="file" class="form-control" name="file" id="brain_file" accept=".png, .jpg, .jpeg" required onchange="previewImage(event, 'brain_preview')">
+                                    <button type="submit" class="btn btn-primary mt-3">
+                                        <i class="fas fa-search me-2"></i> Analyze Brain Scan
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-4 d-flex" data-aos="fade-left" data-aos-delay="100">
+                            <div class="image-preview w-100" id="brain_preview">
+                                <p class="text-muted">Image preview appears here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pneumonia Detection Pane -->
+                <div class="tab-pane fade" id="lungs-pane" role="tabpanel" aria-labelledby="lungs-tab" data-aos="fade-up">
+                    <h2 class="section-title mt-4">
+                        <i class="fas fa-lungs"></i> Pneumonia Detection
+                    </h2>
+                    <p class="mb-4">Identify potential signs of pneumonia in lung X-rays using cutting-edge AI. Upload a chest X-ray for analysis.</p>
+                     <div class="row align-items-stretch">
+                        <div class="col-lg-6 mb-4 d-flex" data-aos="fade-right" data-aos-delay="100">
+                            <div class="upload-section w-100">
+                                <form action="/upload_lungs" method="post" enctype="multipart/form-data" id="lungsForm" onsubmit="return showLoading('lungsForm');">
+                                     <label for="lungs_file" class="form-label">Upload Chest X-Ray (png, jpg, jpeg):</label>
+                                    <input type="file" class="form-control" name="file" id="lungs_file" accept=".png, .jpg, .jpeg" required onchange="previewImage(event, 'lungs_preview')">
+                                    <button type="submit" class="btn btn-primary mt-3">
+                                        <i class="fas fa-search me-2"></i> Analyze Lung X-Ray
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-4 d-flex" data-aos="fade-left" data-aos-delay="100">
+                            <div class="image-preview w-100" id="lungs_preview">
+                                <p class="text-muted">Image preview appears here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bone Fracture Detection Pane -->
+                <div class="tab-pane fade" id="bone-pane" role="tabpanel" aria-labelledby="bone-tab" data-aos="fade-up">
+                    <h2 class="section-title mt-4">
+                        <i class="fas fa-bone"></i> Bone Fracture Detection
+                    </h2>
+                    <p class="mb-4">Detect potential fractures in bone X-rays with AI-powered accuracy. Upload an X-ray image for analysis.</p>
+                    <div class="row align-items-stretch">
+                        <div class="col-lg-6 mb-4 d-flex" data-aos="fade-right" data-aos-delay="100">
+                            <div class="upload-section w-100">
+                                <form action="/upload_bone" method="post" enctype="multipart/form-data" id="boneForm" onsubmit="return showLoading('boneForm');">
+                                    <label for="bone_file" class="form-label">Upload Bone X-Ray (png, jpg, jpeg):</label>
+                                    <input type="file" class="form-control" name="file" id="bone_file" accept=".png, .jpg, .jpeg" required onchange="previewImage(event, 'bone_preview')">
+                                    <button type="submit" class="btn btn-primary mt-3">
+                                        <i class="fas fa-search me-2"></i> Analyze Bone X-Ray
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-4 d-flex" data-aos="fade-left" data-aos-delay="100">
+                            <div class="image-preview w-100" id="bone_preview">
+                               <p class="text-muted">Image preview appears here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End Tab Content -->
+
+             <!-- Result Section Container (Populated by Flask using Jinja) -->
+             <div id="resultContainer" class="mt-5">
+                 {% if message %}
+                 <div class="result-section" id="result" data-aos="fade-up">
+                     <h2 class="section-title">
+                         <i class="fas fa-check-circle"></i> Detection Result
+                     </h2>
+                     <div class="row">
+                         <div class="col-lg-5 mb-4 d-flex justify-content-center align-items-center" data-aos="fade-right">
+                             <div class="result-image-container">
+                                 {% if image_url %}
+                                 <img src="{{ image_url }}" alt="Analyzed Image" class="img-fluid">
+                                 {% else %}
+                                 <p class="text-muted">Analyzed image not available.</p>
+                                 {% endif %}
+                             </div>
+                         </div>
+                         <div class="col-lg-7" data-aos="fade-left">
+                             <div class="result-details">
+                                 <p><strong>Analysis Result:</strong> {{ message }}</p>
+                                 {% if accuracy is defined and accuracy is not none %}
+                                     <p><strong>Confidence Score:</strong> {{ accuracy | round(2) }}%</p>
+                                 {% endif %}
+                                 {% if damage_percentage is defined and damage_percentage is not none %}
+                                     <p><strong>Estimated Severity/Damage:</strong> {{ damage_percentage | round(2) }}%</p>
+                                 {% endif %}
+                                 {% if health_status %}
+                                     <p><strong>Detected Status:</strong> <span class="fw-bold">{{ health_status }}</span></p>
+                                 {% endif %}
+
+                                 {% if recommendations %}
+                                     <div class="recommendations">
+                                         <h3><i class="fas fa-notes-medical me-2"></i> Recommendations</h3>
+                                         <ul>
+                                             {% for recommendation in recommendations %}
+                                                 <li>{{ recommendation }}</li>
+                                             {% endfor %}
+                                         </ul>
+                                     </div>
+                                 {% endif %}
+
+                                 {% if precautions %}
+                                     <div class="precautions mt-3">
+                                         <h3><i class="fas fa-shield-alt me-2"></i> Precautions</h3>
+                                         <ul>
+                                             {% for precaution in precautions %}
+                                                 <li>{{ precaution }}</li>
+                                             {% endfor %}
+                                         </ul>
+                                     </div>
+                                 {% endif %}
+
+                                <!-- AI Assistant Chat Box -->
+                                <div class="ai-assistant-box" data-aos="fade-up" data-aos-delay="100">
+                                     <h3><i class="fas fa-robot me-2"></i>Ask AI About Your Result</h3>
+                                     <p class="small text-muted">Ask general questions about the detected status or related topics.</p>
+                                     <div id="chat-box">
+                                         <!-- Initial AI Message for Result Chat -->
+                                         <div class="chat-message ai">
+                                             <div class="message-content">
+                                                Hi! Ask me anything about the '{{ health_status or "detected status" }}' result shown above or general health topics. Remember to consult a doctor for medical advice.
+                                             </div>
+                                         </div>
+                                         <!-- Result-specific chat messages will appear here -->
+                                     </div>
+                                     <div class="input-group">
+                                         <input type="text" id="user-query" placeholder="Ask about '{{ health_status or "the diagnosis" }}'..." class="form-control" aria-label="Ask AI about result">
+                                         <button id="askAiBtn" class="btn btn-primary">
+                                             <i class="fas fa-paper-plane"></i>
+                                         </button>
+                                     </div>
+                                 </div>
+
+                                 <p class="mt-4 fst-italic text-muted"><small>Disclaimer: This AI analysis is for informational purposes only and not a substitute for professional medical advice. Consult a qualified healthcare provider for diagnosis and treatment.</small></p>
+
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                 {% endif %}
+             </div> <!-- End resultContainer -->
+
+
+            <!-- How It Works Section -->
+            <div class="how-it-works mt-5 pt-4" id="how-it-works" data-aos="fade-up">
+                <h2 class="section-title text-center mb-5">
+                    <i class="fas fa-cogs"></i> How MediXpert Works
+                </h2>
+                <div class="row">
+                    <div class="col-md-4 mb-4 d-flex" data-aos="fade-up" data-aos-delay="100">
+                        <div class="step-card w-100">
+                            <div class="step-number">1</div>
+                            <h3>Upload Image</h3>
+                            <p>Securely upload your medical scan (MRI, X-Ray) via the designated tab above.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4 d-flex" data-aos="fade-up" data-aos-delay="200">
+                        <div class="step-card w-100">
+                            <div class="step-number">2</div>
+                            <h3>AI Analysis</h3>
+                            <p>Our trained AI models analyze the image for specific patterns related to the condition.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4 d-flex" data-aos="fade-up" data-aos-delay="300">
+                        <div class="step-card w-100">
+                            <div class="step-number">3</div>
+                            <h3>View Results</h3>
+                            <p>Receive an instant report including the detected status, confidence score, and general recommendations.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Section -->
+            <div class="team-section mt-5 pt-4" id="team" data-aos="fade-up">
+                <h2 class="section-title text-center mb-5">
+                    <i class="fas fa-users"></i> Our Team
+                </h2>
+                <div class="row justify-content-center">
+                    <!-- Team Member 1 -->
+                    <div class="col-md-4 mb-4 d-flex" data-aos="fade-up" data-aos-delay="200">
+    <div class="team-card w-100">
+        <img src="{{ url_for('static', filename='images/sushma11.jpg') }}"
+             alt="Sushma"
+             class="team-img"
+             onerror="this.onerror=null;this.src='https://via.placeholder.com/120/2ecc71/ffffff?text=S';">
+        <h3 class="mt-3">Sushma</h3>
+        <p class="text-muted">Web Developer</p>
+        <div class="mt-3">
+            <a href="https://www.linkedin.com/in/sushmakindinti/" class="social-icon" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="social-icon" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            <a href="mailto:vtu21849@veltech,edu.in" class="social-icon" aria-label="Email"><i class="fas fa-envelope"></i></a>
+        </div>
+    </div>
+</div>
+                     <!-- Team Member 2 -->
+                    <div class="col-md-4 mb-4 d-flex" data-aos="fade-up" data-aos-delay="200">
+    <div class="team-card w-100">
+        <img src="{{ url_for('static', filename='images/lokeshwar.jpg') }}"
+             alt="Lokeshwar"
+             class="team-img"
+             onerror="this.onerror=null;this.src='https://via.placeholder.com/120/2ecc71/ffffff?text=S';">
+        <h3 class="mt-3">Lokeshwar</h3>
+        <p class="text-muted">Data Scientist</p>
+        <div class="mt-3">
+            <a href="https://www.linkedin.com/in/lam-lokeshwar-730bb12a0/" class="social-icon" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a href="https://github.com/Lokiee-001" class="social-icon" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            <a href="mailto:lamlokeshwar001@gmail.com" class="social-icon" aria-label="Email"><i class="fas fa-envelope"></i></a>
+        </div>
+    </div>
+</div>
+
+                     <!-- Team Member 3 -->
+      <div class="col-md-4 mb-4 d-flex" data-aos="fade-up" data-aos-delay="200">
+    <div class="team-card w-100">
+        <img src="{{ url_for('static', filename='images/deekshith11.jpg') }}"
+             alt="Sushma"
+             class="team-img"
+             onerror="this.onerror=null;this.src='https://via.placeholder.com/120/2ecc71/ffffff?text=S';">
+        <h3 class="mt-3">Deekshitha</h3>
+        <p class="text-muted">AI Specialist</p>
+        <div class="mt-3">
+            <a href="https://www.linkedin.com/in/shivapuramdeekshitha/" class="social-icon" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="social-icon" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            <a href="mailto:vtu21745@veltech.edu.in" class="social-icon" aria-label="Email"><i class="fas fa-envelope"></i></a>
+        </div>
+    </div>
+</div>
+            </div>
+
+            <!-- About Section -->
+            <div class="about-section mt-5 pt-4" id="about" data-aos="fade-up">
+                <h2 class="section-title text-center mb-4">
+                    <i class="fas fa-info-circle"></i> About Us
+                </h2>
+                <p class="text-center mb-4 lead" style="max-width: 800px; margin: 0 auto;">
+                    MediXpert leverages cutting-edge AI to provide rapid, preliminary analysis of medical images. Our mission is to assist healthcare professionals and inform patients by offering accessible insights derived from medical scans.
+                </p>
+                <div class="row mt-5">
+                    <div class="col-md-6 mb-4 d-flex" data-aos="fade-right">
+                        <div class="step-card h-100 w-100">
+                            <h3><i class="fas fa-bullseye me-2"></i> Our Mission</h3>
+                            <p>To democratize preliminary medical image analysis using AI, making insights faster and more accessible, thereby supporting diagnostic processes.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4 d-flex" data-aos="fade-left">
+                        <div class="step-card h-100 w-100">
+                            <h3><i class="fas fa-eye me-2"></i> Our Vision</h3>
+                            <p>To be a trusted AI partner in healthcare, continuously improving our models to provide reliable, understandable analysis that complements expert medical review.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="contact-section mt-5 pt-4" id="contact" data-aos="fade-up">
+                <h2 class="section-title text-center mb-5">
+                    <i class="fas fa-envelope-open-text"></i> Contact Us
+                </h2>
+                <div class="row">
+                    <div class="col-lg-6 mb-4 d-flex" data-aos="fade-right">
+                        <div class="step-card h-100 w-100">
+                            <h3><i class="fas fa-paper-plane me-2"></i> Get In Touch</h3>
+                            <p>Have questions, feedback, or partnership inquiries? Reach out to us:</p>
+                            <ul class="list-unstyled mt-3">
+                                <li class="mb-2"><i class="fas fa-envelope me-2 fa-fw"></i> info@medixpert.ai</li>
+                                <li class="mb-2"><i class="fas fa-phone me-2 fa-fw"></i> +1 (555) 123-AI4U</li>
+                                <li class="mb-2"><i class="fas fa-map-marker-alt me-2 fa-fw"></i> 123 Innovation Drive, Tech Park</li>
+                            </ul>
+                             <p class="mt-3 mb-1">Follow us on:
+                             <div class="mt-auto">
+                                <a href="#" class="social-icon me-2" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#" class="social-icon me-2" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="social-icon" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            </div></p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4 d-flex" data-aos="fade-left">
+                        <div class="step-card h-100 w-100">
+                            <h3><i class="fas fa-comment-dots me-2"></i> Send Us a Message</h3>
+                            <form id="contactForm" onsubmit="handleContactForm(event)">
+                                <div class="mb-3">
+                                    <label for="contactName" class="form-label visually-hidden">Name</label>
+                                    <input type="text" class="form-control" id="contactName" placeholder="Your Name" required>
+                                </div>
+                                <div class="mb-3">
+                                     <label for="contactEmail" class="form-label visually-hidden">Email</label>
+                                    <input type="email" class="form-control" id="contactEmail" placeholder="Your Email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contactMessage" class="form-label visually-hidden">Message</label>
+                                    <textarea class="form-control" id="contactMessage" rows="4" placeholder="Your Message" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-2"></i> Send Message
+                                </button>
+                                <div id="contactFormStatus" class="mt-3"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End Main Container -->
+    </div> <!-- End Container -->
+
+    <!-- Footer -->
+    <footer class="mt-5">
+        <div class="container text-center">
+            <div class="social-icons mb-4">
+                <a href="#" class="social-icon" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social-icon" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-icon" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" class="social-icon" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social-icon" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p class="mb-3">&copy; <span id="footer-year"></span> MediXpert. All rights reserved.</p>
+            <p class="mb-0 small">Empowering healthcare through AI | Version 1.2</p>
+             <p class="mt-2 small fst-italic"><a href="#home" class="text-white text-decoration-none">Back to Top</a></p>
+        </div>
+    </footer>
+
+    <!-- AI Assistant Button -->
+    <div class="ai-assistant" onclick="toggleChat()" title="Ask MediXpert AI" aria-haspopup="true" aria-expanded="false">
+        <div class="ai-pulse"></div>
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <!-- AI Chat Modal (Floating) -->
+    <div class="chat-modal" id="chatModal" role="dialog" aria-modal="true" aria-labelledby="chatTitle">
+        <div class="chat-header">
+            <i class="fas fa-robot"></i>
+            <div class="chat-title" id="chatTitle">MediXpert AI Assistant</div>
+            <button class="close-chat" onclick="toggleChat()" aria-label="Close chat">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <!-- Initial AI message -->
+            <div class="chat-message ai">
+                <div class="message-content">
+                    Hello! I'm the MediXpert AI Assistant. How can I help you today? Feel free to ask about the app, general health topics, or anything else!
+                </div>
+            </div>
+            <!-- Messages will be added here by JS -->
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Ask MediXpert..." aria-label="Chat input">
+            <button class="send-btn" id="sendBtn" aria-label="Send message">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS (Animate On Scroll) -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- GSAP for advanced animations (Optional, used for AI Assistant float) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+
+    <!-- Combined and Corrected JavaScript -->
+    <script>
+        // --- Initialization ---
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true, // Animation happens only once per element
+            delay: 100, // Small delay
+        });
+
+        // --- Constants ---
+        // !!!!! WARNING !!!!! SECURITY RISK !!!!!
+        // This key is EXPOSED to anyone viewing the page source.
+        // Use ONLY for local testing. Replace with server-side handling for deployment.
+        const API_KEY = 'AIzaSyA4BcSeOEPYkZr2nB4Yy3IyBITLvn9Qjso'; // <<< YOUR PROVIDED API KEY INSERTED HERE
+        // !!!!! WARNING !!!!! SECURITY RISK !!!!!
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
+
+        // --- Dynamic Elements ---
+        const introOverlay = document.querySelector('.intro-overlay');
+        if (introOverlay) {
+            introOverlay.addEventListener('animationend', (event) => {
+                 if (event.animationName === 'fadeOut' && introOverlay) {
+                     setTimeout(() => { if(introOverlay) introOverlay.style.display = 'none'; }, 50);
+                 }
+            });
+        }
+
+        const footerYearElement = document.getElementById('footer-year');
+         if(footerYearElement) footerYearElement.textContent = new Date().getFullYear();
+
+        function updateClock() {
+            const now = new Date();
+            const timeElement = document.getElementById('time');
+            const dateElement = document.getElementById('date');
+            if (timeElement && dateElement) {
+                timeElement.textContent = now.toLocaleTimeString([], { hour12: false });
+                dateElement.textContent = now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+        }
+        let clockInterval = setInterval(updateClock, 1000);
+        updateClock()
+
+        // --- Image Preview ---
+        function previewImage(event, previewId) {
+            const file = event.target.files[0];
+            const preview = document.getElementById(previewId);
+            const fileInput = event.target;
+            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+
+            if (!preview) { console.error("Preview element not found:", previewId); return; }
+
+            preview.innerHTML = ''; // Clear previous preview
+            const existingError = fileInput.parentNode?.querySelector('.file-error-message');
+            if(existingError) existingError.remove();
+
+            if (file && allowedTypes.includes(file.type)) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = "Uploaded Image Preview";
+                    img.className = "img-fluid";
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            } else if (file) { // Invalid type
+                 const p = document.createElement('p');
+                 p.className = 'text-danger small mt-2 file-error-message';
+                 p.textContent = 'Invalid file type. Please select a PNG, JPG, or JPEG image.';
+                 fileInput.parentNode?.insertBefore(p, fileInput.nextSibling);
+                 fileInput.value = ''; // Clear invalid selection
+                 const defaultText = document.createElement('p');
+                 defaultText.className = 'text-muted';
+                 defaultText.textContent = 'Image preview appears here';
+                 preview.appendChild(defaultText);
+            } else { // No file or selection cleared
+                const p = document.createElement('p');
+                p.className = 'text-muted';
+                p.textContent = 'Image preview appears here';
+                preview.appendChild(p);
+            }
+        }
+
+        // --- Theme Switching ---
+         function setTheme(themeName) {
+            document.body.className = ''; // Clear existing body classes
+            document.documentElement.className = ''; // Clear existing html classes
+
+            const themePrimaryRGB = {
+                default: '46, 204, 113', neon: '15, 240, 252', dark: '46, 204, 113',
+                ocean: '0, 180, 216', sunset: '255, 126, 95', royal: '106, 48, 147',
+                minimal: '51, 51, 51'
+            };
+
+            document.body.classList.add(themeName + '-theme');
+            document.documentElement.classList.add(themeName + '-theme');
+            document.documentElement.style.setProperty('--primary-color-rgb', themePrimaryRGB[themeName] || '46, 204, 113');
+            localStorage.setItem('theme', themeName);
+
+            document.querySelectorAll('#themeDropdown .dropdown-item').forEach(item => {
+                 item.classList.remove('active');
+                 if (item.getAttribute('onclick') === `setTheme('${themeName}')`) {
+                     item.classList.add('active');
+                 }
+             });
+        }
+        const savedTheme = localStorage.getItem('theme') || 'default';
+        setTheme(savedTheme);
+
+        // --- Loading Indicator (Improved) ---
+        function showLoading(formId) {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const progressBar = loadingOverlay?.querySelector('.progress-bar');
+            const form = document.getElementById(formId);
+
+            if (!loadingOverlay || !progressBar || !form) {
+                console.error("Loading overlay, progress bar, or form not found.", {formId});
+                alert("An error occurred preparing the upload. Please refresh the page.");
+                return false; // Prevent submission
+            }
+
+            const fileInput = form.querySelector('input[type="file"]');
+            const existingError = form.querySelector('.file-error-message');
+            if(existingError) existingError.remove();
+
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                 let errorMsg = document.createElement('p');
+                 errorMsg.className = 'text-danger small mt-2 file-error-message';
+                 errorMsg.textContent = 'Please select a file first.';
+                 fileInput.parentNode?.insertBefore(errorMsg, fileInput.nextSibling);
+                 return false; // Prevent submission
+            }
+            // Additional check for valid file type
+            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+            if (!allowedTypes.includes(fileInput.files[0].type)) {
+                let errorMsg = document.createElement('p');
+                 errorMsg.className = 'text-danger small mt-2 file-error-message';
+                 errorMsg.textContent = 'Invalid file type selected.';
+                 fileInput.parentNode?.insertBefore(errorMsg, fileInput.nextSibling);
+                return false; // Prevent submission
+            }
+
+            loadingOverlay.classList.add('active');
+            progressBar.style.width = '0%';
+            progressBar.setAttribute('aria-valuenow', '0');
+            progressBar.classList.remove('bg-success', 'bg-danger');
+            progressBar.classList.add('progress-bar-animated');
+
+            let progress = 0;
+            const duration = 2500 + Math.random() * 2000;
+            const interval = 50;
+            const increment = (interval / duration) * 100;
+
+            if (window.loadingIntervalId) clearInterval(window.loadingIntervalId);
+            window.loadingIntervalId = setInterval(() => {
+                progress += increment;
+                const currentWidth = Math.min(progress, 95); // Stop at 95%
+                progressBar.style.width = `${currentWidth}%`;
+                progressBar.setAttribute('aria-valuenow', currentWidth.toFixed(0));
+
+                if (progress >= 95) {
+                    clearInterval(window.loadingIntervalId);
+                    window.loadingIntervalId = null;
+                }
+            }, interval);
+
+            return true; // Allow form submission
+        }
+
+        // --- Navigation & Scrolling ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tab activation based on hash or default
+            let activeTabId = 'brain'; // Default
+            const urlHash = window.location.hash.substring(1);
+            if (urlHash && document.getElementById(`${urlHash}-tab`)) {
+                activeTabId = urlHash.replace('-tab','');
+            } else if (urlHash && document.getElementById(`${urlHash}-pane`)) {
+                 activeTabId = urlHash.replace('-pane','');
+            } else if(document.querySelector('.result-section')) {
+                const serverActiveTab = document.querySelector('.nav-tabs .nav-link.active');
+                if (serverActiveTab) {
+                    activeTabId = serverActiveTab.id.replace('-tab', '');
+                }
+            }
+
+            const tabButtonElement = document.getElementById(`${activeTabId}-tab`);
+            const paneElement = document.getElementById(`${activeTabId}-pane`);
+
+            if (tabButtonElement && paneElement) {
+                 document.querySelectorAll('.tab-pane.fade').forEach(p => p.classList.remove('show', 'active'));
+                 document.querySelectorAll('.nav-tabs .nav-link').forEach(l => {
+                    l.classList.remove('active');
+                    l.setAttribute('aria-selected', 'false');
+                 });
+                 paneElement.classList.add('show', 'active');
+                 tabButtonElement.classList.add('active');
+                 tabButtonElement.setAttribute('aria-selected', 'true');
+            }
+
+            // Scroll to result section if it exists
+             const resultContainer = document.getElementById('resultContainer');
+             const resultSection = resultContainer?.querySelector('.result-section');
+             if (resultSection && resultContainer.innerHTML.trim() !== '') {
+                 setTimeout(() => {
+                     resultSection.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+                 }, 300);
+             }
+
+            // Smooth scroll for Navbar links
+            document.querySelectorAll('.navbar-nav a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    try {
+                        const targetElement = document.querySelector(targetId);
+                        if(targetElement) {
+                            const navbarHeight = document.querySelector('.navbar')?.offsetHeight || 60;
+                            const elementPosition = targetElement.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - 20;
+                            window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+                            const navbarCollapse = document.getElementById('navbarNav');
+                            if (navbarCollapse?.classList.contains('show')) {
+                                 new bootstrap.Collapse(navbarCollapse).hide();
+                            }
+                            if (history.pushState) { history.pushState(null, null, targetId); }
+                        }
+                    } catch (error) { console.error(`Scroll error: ${error}`); }
+                });
+            });
+
+            // Active nav link on scroll
+            const sections = Array.from(document.querySelectorAll('.main-container > div[id]'));
+            const navLinks = document.querySelectorAll('.navbar-nav .nav-link[href^="#"]');
+            const homeLink = document.querySelector('.navbar-nav .nav-link[href="#home"]');
+
+             function changeActiveLink() {
+                 const navbarHeight = document.querySelector('.navbar')?.offsetHeight || 60;
+                 const scrollPosition = window.pageYOffset + navbarHeight + 60;
+                 let currentActiveSectionId = null;
+                 sections.forEach(section => {
+                    if (section.offsetTop <= scrollPosition) {
+                        if (section.offsetTop + section.offsetHeight > scrollPosition || window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 50) {
+                            currentActiveSectionId = section.id;
+                        }
+                    }
+                 });
+                 navLinks.forEach(link => {
+                     link.classList.remove('active');
+                     link.removeAttribute('aria-current');
+                     if (link.getAttribute('href') === `#${currentActiveSectionId}`) {
+                         link.classList.add('active');
+                         link.setAttribute('aria-current', 'page');
+                     }
+                 });
+                 if (!currentActiveSectionId && homeLink) {
+                     homeLink.classList.add('active');
+                     homeLink.setAttribute('aria-current', 'page');
+                 }
+             }
+             let scrollTimeout;
+             window.addEventListener('scroll', () => {
+                 clearTimeout(scrollTimeout);
+                 scrollTimeout = setTimeout(changeActiveLink, 50);
+             }, { passive: true });
+             changeActiveLink(); // Initial check
+         }); // End DOMContentLoaded
+
+
+        // --- AI Assistant Chat (Shared Logic) ---
+        const chatModal = document.getElementById('chatModal');
+        const chatBody = document.getElementById('chatBody'); // Floating chat body
+        const chatInput = document.getElementById('chatInput'); // Floating chat input
+        const sendBtn = document.getElementById('sendBtn'); // Floating chat send button
+        const aiAssistantBtn = document.querySelector('.ai-assistant');
+
+        const resultChatBox = document.getElementById('chat-box'); // Result section chat display
+        const resultQueryInput = document.getElementById('user-query'); // Result section input
+        const resultSendBtn = document.getElementById('askAiBtn'); // Result section send button
+
+        function toggleChat() {
+            if (!chatModal || !aiAssistantBtn) return;
+            chatModal.classList.toggle('active');
+             if (chatModal.classList.contains('active')) {
+                chatInput?.focus();
+                aiAssistantBtn.style.opacity = '0.7';
+                aiAssistantBtn.style.transform = 'scale(0.95)';
+                aiAssistantBtn.setAttribute('aria-expanded', 'true');
+            } else {
+                 aiAssistantBtn.style.opacity = '1';
+                 aiAssistantBtn.style.transform = 'scale(1)';
+                 aiAssistantBtn.setAttribute('aria-expanded', 'false');
+            }
+        }
+
+        // GSAP animation for AI assistant button
+        if (typeof gsap !== 'undefined') {
+            gsap.to(".ai-assistant", { y: -7, duration: 1.3, repeat: -1, yoyo: true, ease: "sine.inOut" });
+        }
+
+        // Generalized function to add messages to EITHER chat box
+        function addChatMessage(message, sender, targetElement, isError = false) {
+            if (!targetElement) {
+                // Default to floating chat if target is missing, but log error
+                console.error("Target chat element not provided for message, defaulting to floating chat:", message);
+                targetElement = chatBody;
+                if(!targetElement) return; // Exit if even default is missing
+            }
+            const messageWrapper = document.createElement('div');
+            messageWrapper.classList.add('chat-message', sender);
+            if (isError) messageWrapper.classList.add('error');
+
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('message-content');
+            contentDiv.innerText = message; // Use innerText for safety
+            contentDiv.innerHTML = contentDiv.innerHTML.replace(/\n/g, '<br>'); // Display newlines
+
+            messageWrapper.appendChild(contentDiv);
+            targetElement.appendChild(messageWrapper);
+            targetElement.scrollTo({ top: targetElement.scrollHeight, behavior: 'smooth' });
+        }
+
+        // Core Gemini API Call and Processing Logic
+        async function callGeminiAPI(userMessage, targetElement, sendingButton) {
+            if (!targetElement || !sendingButton) {
+                console.error("Missing target element or button for API call");
+                // Attempt to restore button if possible
+                if(sendingButton) {
+                    const originalButtonContent = sendingButton.querySelector('i') ? sendingButton.querySelector('i').outerHTML : 'Send';
+                    sendingButton.disabled = false;
+                    sendingButton.innerHTML = originalButtonContent;
+                }
+                return;
+            }
+
+             sendingButton.disabled = true;
+             const originalButtonContent = sendingButton.innerHTML;
+             sendingButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
+            addChatMessage("Thinking...", 'ai', targetElement);
+            const thinkingMessageElement = targetElement.lastChild;
+
+            // API Key Check - check if it's the placeholder OR empty/invalid
+            if (!API_KEY || API_KEY.includes("YOUR") || API_KEY.length < 30 || API_KEY === 'AIzaSyCQoc3iaameHf8ebnhPiP-r19FPLJD9gJM') { // Added check against old placeholder too
+                 if (thinkingMessageElement && thinkingMessageElement.parentNode === targetElement) targetElement.removeChild(thinkingMessageElement);
+                 addChatMessage("Chatbot Error: API Key not configured or invalid. Please check the setup in the HTML source.", 'ai', targetElement, true);
+                 sendingButton.disabled = false;
+                 sendingButton.innerHTML = originalButtonContent;
+                 return;
+            }
+
+            // System Prompt - Ensure it doesn't get parsed as template
+            const systemPromptText = `You are MediXpert AI Assistant, a helpful and informative chatbot for the MediXpert web application.
+
+Your capabilities are:
+1. Answer questions about the MediXpert application itself (how it works, features, team, about section).
+2. Provide general information about the conditions MediXpert analyzes: Brain Tumors (from MRI), Pneumonia (from Chest X-ray), Bone Fractures (from X-ray).
+3. Answer general knowledge questions on a wide variety of topics, even if they are unrelated to MediXpert or medicine.
+4. Provide general information about medications, treatments, and prescriptions when asked.
+5. If the user asks about a specific result shown on the page, provide general information about the *condition* mentioned in the result (e.g., "Pneumonia detected"), but do NOT interpret the image or percentages directly.
+
+Important Guidelines:
+1.  **CRITICAL SAFETY DISCLAIMER:** When providing *any* information related to medications, treatments, potential diagnoses, symptoms, or prescriptions, you MUST ALWAYS include the following disclaimer formatted exactly like this at the end of your response:
+    \n\n---\n**Disclaimer:** I am an   MediXpert AI assistant. T\n---
+2.  Be helpful and informative.
+3.  Keep answers reasonably concise and easy to understand. Use paragraphs for readability.
+4.  Respond politely.
+5.  If unsure, state that clearly.
+6.  Do NOT give personalized medical advice or diagnosis.
+
+Now, answer the user's query based on these guidelines. User query: `;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        "contents": [{ "parts": [{ "text": systemPromptText + userMessage }] }], // Use the variable here
+                        "safetySettings": [ // Keep safety settings
+                            { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE" },
+                            { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE" },
+                            { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE" },
+                            { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE" }
+                        ]
+                    })
+                });
+
+                if (thinkingMessageElement && thinkingMessageElement.parentNode === targetElement) {
+                     targetElement.removeChild(thinkingMessageElement);
+                }
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('API Error Response:', response.status, errorData);
+                    let errorMsg = `API Error: ${response.status}`;
+                    if (errorData?.error?.message) {
+                        // Specifically check for common API key errors
+                        if (errorData.error.message.toLowerCase().includes('api key not valid') || errorData.error.message.toLowerCase().includes('permission denied')) {
+                             errorMsg = "Chatbot Error: Invalid or unauthorized API Key.";
+                        } else {
+                            errorMsg += ` - ${errorData.error.message}`;
+                        }
+                    } else if (response.status === 429) {
+                        errorMsg = "Chatbot Error: Rate limit exceeded. Please try again later.";
+                    } else {
+                         errorMsg += ` - ${response.statusText}`; // Add status text if no message
+                    }
+                    throw new Error(errorMsg);
+                }
+
+                const data = await response.json();
+                let aiResponse = "Sorry, I couldn't get a response.";
+                let isBlocked = false;
+
+                if (data.candidates && data.candidates[0]) {
+                     const candidate = data.candidates[0];
+                     if ((candidate.finishReason === "STOP" || candidate.finishReason === "MAX_TOKENS") && candidate.content?.parts?.[0]?.text) {
+                         aiResponse = candidate.content.parts[0].text;
+                         if (candidate.finishReason === "MAX_TOKENS") aiResponse += "\n\n(Response may be incomplete)";
+
+                         // Fallback Disclaimer Check
+                          const medicalKeywords = ['medication', 'prescription', 'treatment', 'symptom', 'diagnosis', 'doctor', 'hospital', 'drug', 'pill', 'therapy', 'dose', 'side effect', 'condition', 'illness', 'health', 'medical', 'cure', 'remedy'];
+                          const disclaimerTextStart = "**Disclaimer:** I am an AI assistant.";
+                          const containsMedicalTerm = medicalKeywords.some(keyword => aiResponse.toLowerCase().includes(keyword));
+
+                          if (containsMedicalTerm && !aiResponse.includes(disclaimerTextStart)) {
+                              console.warn("AI response might be missing required disclaimer. Appending manually.");
+                              aiResponse += `\n\n---\n${disclaimerTextStart} This information is for general knowledge and informational purposes only, and does not constitute medical advice. It is essential to consult with a qualified healthcare professional for any health concerns or before making any decisions related to your health or treatment. Do not disregard professional medical advice or delay in seeking it because of something you have read or heard from me.\n---`;
+                          }
+
+                     } else if (candidate.finishReason === "SAFETY") {
+                         aiResponse = "I cannot provide a response due to safety guidelines."; isBlocked = true;
+                     } else if (candidate.finishReason === "RECITATION") {
+                         aiResponse = "My response might be too similar to existing sources. Please rephrase."; isBlocked = true;
+                     } else {
+                         aiResponse = `Issue generating response (${candidate.finishReason || 'Unknown'}). Try again.`; isBlocked = true;
+                     }
+                } else if (data.promptFeedback?.blockReason) {
+                     aiResponse = `Request blocked due to safety guidelines (${data.promptFeedback.blockReason}).`; isBlocked = true;
+                }
+
+                addChatMessage(aiResponse, 'ai', targetElement, isBlocked);
+
+            } catch (error) {
+                console.error('Error calling Gemini API:', error);
+                if (thinkingMessageElement && thinkingMessageElement.parentNode === targetElement) {
+                     targetElement.removeChild(thinkingMessageElement);
+                }
+                addChatMessage(`Sorry, an error occurred: ${error.message}`, 'ai', targetElement, true);
+            } finally {
+                sendingButton.disabled = false;
+                sendingButton.innerHTML = originalButtonContent;
+                if (targetElement === chatBody) chatInput?.focus();
+                else if (targetElement === resultChatBox) resultQueryInput?.focus();
+            }
+        } // End callGeminiAPI
+
+        // Handler for Floating Chat
+        function handleFloatingChatSend() {
+             if (!chatInput || !chatBody || !sendBtn) return;
+             const userMessage = chatInput.value.trim();
+             if (!userMessage) return;
+             addChatMessage(userMessage, 'user', chatBody);
+             chatInput.value = '';
+             callGeminiAPI(userMessage, chatBody, sendBtn);
+        }
+
+        // Handler for Result Section Chat
+        function handleResultChatSend() {
+             if (!resultQueryInput || !resultChatBox || !resultSendBtn) return;
+             const userMessage = resultQueryInput.value.trim();
+             if (!userMessage) return;
+             addChatMessage(userMessage, 'user', resultChatBox);
+             resultQueryInput.value = '';
+             callGeminiAPI(userMessage, resultChatBox, resultSendBtn);
+        }
+
+        // --- Event Listeners ---
+        // Floating Chat
+        sendBtn?.addEventListener('click', handleFloatingChatSend);
+        chatInput?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                 e.preventDefault();
+                handleFloatingChatSend();
+            }
+        });
+
+        // Result Section Chat
+        resultSendBtn?.addEventListener('click', handleResultChatSend);
+        resultQueryInput?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                 e.preventDefault();
+                handleResultChatSend();
+            }
+        });
+
+        // Contact Form Handler
+        function handleContactForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            const statusDiv = document.getElementById('contactFormStatus');
+            const submitButton = form.querySelector('button[type="submit"]');
+            if (!statusDiv || !submitFimButton) return;
+
+            submitButton.disabled = true;
+            statusDiv.innerHTML = '<span class="text-info"><i class="fas fa-spinner fa-spin me-1"></i> Sending...</span>';
+            setTimeout(() => {
+                // Simulate success - replace with actual AJAX later if needed
+                statusDiv.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i> Message sent successfully!</span>';
+                form.reset();
+                setTimeout(() => { statusDiv.innerHTML = ''; }, 5000);
+                submitButton.disabled = false;
+            }, 1500);
+        }
+
+    </script>
+
+</body>
+</html>

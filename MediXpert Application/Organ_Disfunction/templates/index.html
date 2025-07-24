@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Image Detection</title>
+</head>
+<body>
+    <h1>Medical Image Detection</h1>
+
+    <!-- Brain Tumor Detection -->
+    <h2>Brain Tumor Detection</h2>
+    <form action="/upload_brain" method="post" enctype="multipart/form-data">
+        <label for="brain_file">Upload Brain Scan Image:</label><br><br>
+        <input type="file" name="file" id="brain_file" required><br><br>
+        <button type="submit">Analyze Brain Scan</button>
+    </form>
+
+    <!-- Pneumonia Detection -->
+    <h2>Pneumonia Detection</h2>
+    <form action="/upload_lungs" method="post" enctype="multipart/form-data">
+        <label for="lungs_file">Upload Lung X-Ray:</label><br><br>
+        <input type="file" name="file" id="lungs_file" required><br><br>
+        <button type="submit">Analyze Lung X-Ray</button>
+    </form>
+</body>
+</html>

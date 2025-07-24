@@ -1,0 +1,2632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediXpert - AI Medical Image Detection</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- AOS (Animate On Scroll) -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --dark-color: #121212;
+            --light-color: #f8f9fc;
+            --text-color: #333;
+            --text-light: #f0f0f0;
+            --theme-name: 'default';
+        }
+
+        /* Neon Theme Variables */
+        :root.neon-theme {
+            --primary-color: #0ff0fc;
+            --secondary-color: #07b6d4;
+            --dark-color: #0a0a1a;
+            --light-color: #1a1a2a;
+            --text-color: #e0e0ff;
+            --text-light: #ffffff;
+            --theme-name: 'neon';
+        }
+
+        /* Dark Theme Variables */
+        :root.dark-theme {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --dark-color: #121212;
+            --light-color: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-light: #ffffff;
+            --theme-name: 'dark';
+        }
+
+        /* Ocean Theme Variables */
+        :root.ocean-theme {
+            --primary-color: #00b4d8;
+            --secondary-color: #0077b6;
+            --dark-color: #03045e;
+            --light-color: #caf0f8;
+            --text-color: #023e8a;
+            --text-light: #ffffff;
+            --theme-name: 'ocean';
+        }
+
+        /* Sunset Theme Variables */
+        :root.sunset-theme {
+            --primary-color: #ff7e5f;
+            --secondary-color: #feb47b;
+            --dark-color: #2c3e50;
+            --light-color: #f8f1e5;
+            --text-color: #34495e;
+            --text-light: #ffffff;
+            --theme-name: 'sunset';
+        }
+
+        /* Royal Theme Variables */
+        :root.royal-theme {
+            --primary-color: #6a3093;
+            --secondary-color: #a044ff;
+            --dark-color: #242582;
+            --light-color: #f8f1ff;
+            --text-color: #553d67;
+            --text-light: #ffffff;
+            --theme-name: 'royal';
+        }
+
+        /* Minimal Theme Variables */
+        :root.minimal-theme {
+            --primary-color: #333333;
+            --secondary-color: #666666;
+            --dark-color: #111111;
+            --light-color: #f9f9f9;
+            --text-color: #444444;
+            --text-light: #ffffff;
+            --theme-name: 'minimal';
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f4f8, #e0eaf2);
+            min-height: 100vh;
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Theme-specific body backgrounds */
+        body.neon-theme {
+            background: linear-gradient(135deg, #0a0a1a, #1a1a2a);
+        }
+
+        body.dark-theme {
+            background: linear-gradient(135deg, #121212, #1a1a1a);
+        }
+
+        body.ocean-theme {
+            background: linear-gradient(135deg, #caf0f8, #90e0ef);
+        }
+
+        body.sunset-theme {
+            background: linear-gradient(135deg, #f8f1e5, #f9d5bb);
+        }
+
+        body.royal-theme {
+            background: linear-gradient(135deg, #f8f1ff, #e2c6ff);
+        }
+
+        body.minimal-theme {
+            background: linear-gradient(135deg, #f9f9f9, #e9e9e9);
+        }
+
+        /* Clock Styles */
+        .clock-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 10px 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .clock-container {
+            background: rgba(30, 30, 30, 0.9);
+            color: var(--text-light);
+        }
+
+        .neon-theme .clock-container {
+            background: rgba(26, 26, 42, 0.9);
+            color: var(--text-light);
+        }
+
+        .ocean-theme .clock-container {
+            background: rgba(202, 240, 248, 0.9);
+        }
+
+        .sunset-theme .clock-container {
+            background: rgba(248, 241, 229, 0.9);
+        }
+
+        .royal-theme .clock-container {
+            background: rgba(248, 241, 255, 0.9);
+        }
+
+        .minimal-theme .clock-container {
+            background: rgba(249, 249, 249, 0.9);
+        }
+
+        .time {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .date {
+            font-size: 0.8rem;
+            margin-top: 3px;
+            color: var(--text-color);
+        }
+
+        /* Cinematic Intro */
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .intro-logo {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        .intro-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            margin-bottom: 1rem;
+        }
+
+        .intro-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .navbar {
+            background: rgba(30, 30, 30, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .neon-theme .navbar {
+            background: rgba(10, 10, 26, 0.95);
+            box-shadow: 0 4px 20px rgba(15, 240, 252, 0.1);
+        }
+
+        .ocean-theme .navbar {
+            background: rgba(202, 240, 248, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 180, 216, 0.1);
+        }
+
+        .sunset-theme .navbar {
+            background: rgba(248, 241, 229, 0.95);
+            box-shadow: 0 4px 20px rgba(255, 126, 95, 0.1);
+        }
+
+        .royal-theme .navbar {
+            background: rgba(248, 241, 255, 0.95);
+            box-shadow: 0 4px 20px rgba(106, 48, 147, 0.1);
+        }
+
+        .minimal-theme .navbar {
+            background: rgba(249, 249, 249, 0.95);
+            box-shadow: 0 4px 20px rgba(51, 51, 51, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+        }
+
+        .navbar-brand i {
+            margin-right: 10px;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-color) !important;
+            position: relative;
+            margin: 0 10px;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Main Content */
+        .main-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            margin: 30px auto;
+            padding: 30px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .main-container {
+            background: rgba(30, 30, 30, 0.9);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .neon-theme .main-container {
+            background: rgba(26, 26, 42, 0.9);
+            box-shadow: 0 8px 30px rgba(15, 240, 252, 0.1);
+        }
+
+        .ocean-theme .main-container {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.1);
+        }
+
+        .sunset-theme .main-container {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 30px rgba(255, 126, 95, 0.1);
+        }
+
+        .royal-theme .main-container {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 30px rgba(106, 48, 147, 0.1);
+        }
+
+        .minimal-theme .main-container {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 30px rgba(51, 51, 51, 0.1);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title i {
+            margin-right: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
+        .section-title:hover::after {
+            width: 100%;
+        }
+
+        /* Tabs */
+        .nav-tabs {
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .dark-theme .nav-tabs {
+            border-bottom-color: #444;
+        }
+
+        .neon-theme .nav-tabs {
+            border-bottom-color: rgba(15, 240, 252, 0.2);
+        }
+
+        .ocean-theme .nav-tabs {
+            border-bottom-color: rgba(0, 180, 216, 0.2);
+        }
+
+        .sunset-theme .nav-tabs {
+            border-bottom-color: rgba(255, 126, 95, 0.2);
+        }
+
+        .royal-theme .nav-tabs {
+            border-bottom-color: rgba(106, 48, 147, 0.2);
+        }
+
+        .minimal-theme .nav-tabs {
+            border-bottom-color: rgba(51, 51, 51, 0.2);
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: #555;
+            font-weight: 500;
+            padding: 15px;
+            margin: 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-width: 150px;
+        }
+
+        .dark-theme .nav-tabs .nav-link {
+            color: #aaa;
+        }
+
+        .neon-theme .nav-tabs .nav-link {
+            color: #e0e0ff;
+        }
+
+        .ocean-theme .nav-tabs .nav-link {
+            color: #023e8a;
+        }
+
+        .sunset-theme .nav-tabs .nav-link {
+            color: #34495e;
+        }
+
+        .royal-theme .nav-tabs .nav-link {
+            color: #553d67;
+        }
+
+        .minimal-theme .nav-tabs .nav-link {
+            color: #444444;
+        }
+
+        .nav-tabs .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(46, 204, 113, 0.1);
+            transform: translateY(100%);
+            transition: transform 0.4s ease;
+            z-index: -1;
+        }
+
+        .neon-theme .nav-tabs .nav-link::before {
+            background: rgba(15, 240, 252, 0.1);
+        }
+
+        .ocean-theme .nav-tabs .nav-link::before {
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        .sunset-theme .nav-tabs .nav-link::before {
+            background: rgba(255, 126, 95, 0.1);
+        }
+
+        .royal-theme .nav-tabs .nav-link::before {
+            background: rgba(106, 48, 147, 0.1);
+        }
+
+        .minimal-theme .nav-tabs .nav-link::before {
+            background: rgba(51, 51, 51, 0.1);
+        }
+
+        .nav-tabs .nav-link:hover, .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            border: none;
+        }
+
+        .nav-tabs .nav-link:hover::before, .nav-tabs .nav-link.active::before {
+            transform: translateY(0);
+        }
+
+        .nav-tabs .nav-link.active {
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .tab-caption {
+            display: block;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            color: #666;
+        }
+
+        .dark-theme .tab-caption {
+            color: #aaa;
+        }
+
+        .neon-theme .tab-caption {
+            color: #b0b0ff;
+        }
+
+        .ocean-theme .tab-caption {
+            color: #0077b6;
+        }
+
+        .sunset-theme .tab-caption {
+            color: #feb47b;
+        }
+
+        .royal-theme .tab-caption {
+            color: #a044ff;
+        }
+
+        .minimal-theme .tab-caption {
+            color: #666666;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .upload-section {
+            background: #2a2a2a;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .neon-theme .upload-section {
+            background: #1e1e2e;
+            box-shadow: 0 4px 15px rgba(15, 240, 252, 0.1);
+        }
+
+        .ocean-theme .upload-section {
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.1);
+        }
+
+        .sunset-theme .upload-section {
+            background: white;
+            box-shadow: 0 4px 15px rgba(255, 126, 95, 0.1);
+        }
+
+        .royal-theme .upload-section {
+            background: white;
+            box-shadow: 0 4px 15px rgba(106, 48, 147, 0.1);
+        }
+
+        .minimal-theme .upload-section {
+            background: white;
+            box-shadow: 0 4px 15px rgba(51, 51, 51, 0.1);
+        }
+
+        .upload-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .neon-theme .upload-section:hover {
+            box-shadow: 0 10px 25px rgba(15, 240, 252, 0.2);
+        }
+
+        .ocean-theme .upload-section:hover {
+            box-shadow: 0 10px 25px rgba(0, 180, 216, 0.2);
+        }
+
+        .sunset-theme .upload-section:hover {
+            box-shadow: 0 10px 25px rgba(255, 126, 95, 0.2);
+        }
+
+        .royal-theme .upload-section:hover {
+            box-shadow: 0 10px 25px rgba(106, 48, 147, 0.2);
+        }
+
+        .minimal-theme .upload-section:hover {
+            box-shadow: 0 10px 25px rgba(51, 51, 51, 0.2);
+        }
+
+        .form-control {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .form-control {
+            background: #333;
+            border-color: #444;
+            color: var(--text-light);
+        }
+
+        .neon-theme .form-control {
+            background: #2a2a3a;
+            border-color: rgba(15, 240, 252, 0.3);
+            color: var(--text-light);
+        }
+
+        .ocean-theme .form-control {
+            background: white;
+            border-color: rgba(0, 180, 216, 0.3);
+            color: var(--text-color);
+        }
+
+        .sunset-theme .form-control {
+            background: white;
+            border-color: rgba(255, 126, 95, 0.3);
+            color: var(--text-color);
+        }
+
+        .royal-theme .form-control {
+            background: white;
+            border-color: rgba(106, 48, 147, 0.3);
+            color: var(--text-color);
+        }
+
+        .minimal-theme .form-control {
+            background: white;
+            border-color: rgba(51, 51, 51, 0.3);
+            color: var(--text-color);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.3);
+        }
+
+        .neon-theme .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(15, 240, 252, 0.3);
+        }
+
+        .ocean-theme .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.3);
+        }
+
+        .sunset-theme .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(255, 126, 95, 0.3);
+        }
+
+        .royal-theme .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(106, 48, 147, 0.3);
+        }
+
+        .minimal-theme .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3);
+        }
+
+        .neon-theme .btn-primary:hover {
+            box-shadow: 0 10px 20px rgba(15, 240, 252, 0.3);
+        }
+
+        .ocean-theme .btn-primary:hover {
+            box-shadow: 0 10px 20px rgba(0, 180, 216, 0.3);
+        }
+
+        .sunset-theme .btn-primary:hover {
+            box-shadow: 0 10px 20px rgba(255, 126, 95, 0.3);
+        }
+
+        .royal-theme .btn-primary:hover {
+            box-shadow: 0 10px 20px rgba(106, 48, 147, 0.3);
+        }
+
+        .minimal-theme .btn-primary:hover {
+            box-shadow: 0 10px 20px rgba(51, 51, 51, 0.3);
+        }
+
+        .btn-primary:hover::before {
+            opacity: 1;
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .dark-theme .loading-content {
+            background: #2a2a2a;
+        }
+
+        .neon-theme .loading-content {
+            background: #1e1e2e;
+        }
+
+        .ocean-theme .loading-content {
+            background: white;
+        }
+
+        .sunset-theme .loading-content {
+            background: white;
+        }
+
+        .royal-theme .loading-content {
+            background: white;
+        }
+
+        .minimal-theme .loading-content {
+            background: white;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .dark-theme .loading-spinner {
+            border-color: #444;
+        }
+
+        .neon-theme .loading-spinner {
+            border-color: rgba(15, 240, 252, 0.2);
+        }
+
+        .ocean-theme .loading-spinner {
+            border-color: #f3f3f3;
+            border-top-color: var(--primary-color);
+        }
+
+        .sunset-theme .loading-spinner {
+            border-color: #f3f3f3;
+            border-top-color: var(--primary-color);
+        }
+
+        .royal-theme .loading-spinner {
+            border-color: #f3f3f3;
+            border-top-color: var(--primary-color);
+        }
+
+        .minimal-theme .loading-spinner {
+            border-color: #f3f3f3;
+            border-top-color: var(--primary-color);
+        }
+
+        /* Image Preview */
+        .image-preview {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .image-preview {
+            background: #2a2a2a;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .neon-theme .image-preview {
+            background: #1e1e2e;
+            box-shadow: 0 4px 15px rgba(15, 240, 252, 0.1);
+        }
+
+        .ocean-theme .image-preview {
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.1);
+        }
+
+        .sunset-theme .image-preview {
+            background: white;
+            box-shadow: 0 4px 15px rgba(255, 126, 95, 0.1);
+        }
+
+        .royal-theme .image-preview {
+            background: white;
+            box-shadow: 0 4px 15px rgba(106, 48, 147, 0.1);
+        }
+
+        .minimal-theme .image-preview {
+            background: white;
+            box-shadow: 0 4px 15px rgba(51, 51, 51, 0.1);
+        }
+
+        .image-preview:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .neon-theme .image-preview:hover {
+            box-shadow: 0 10px 25px rgba(15, 240, 252, 0.2);
+        }
+
+        .ocean-theme .image-preview:hover {
+            box-shadow: 0 10px 25px rgba(0, 180, 216, 0.2);
+        }
+
+        .sunset-theme .image-preview:hover {
+            box-shadow: 0 10px 25px rgba(255, 126, 95, 0.2);
+        }
+
+        .royal-theme .image-preview:hover {
+            box-shadow: 0 10px 25px rgba(106, 48, 147, 0.2);
+        }
+
+        .minimal-theme .image-preview:hover {
+            box-shadow: 0 10px 25px rgba(51, 51, 51, 0.2);
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            transition: transform 0.4s ease;
+        }
+
+        .image-preview:hover img {
+            transform: scale(1.02);
+        }
+
+        /* Result Section */
+        .result-section {
+            background: var(--light-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .result-section {
+            background: #2a2a2a;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .neon-theme .result-section {
+            background: #1e1e2e;
+            box-shadow: 0 4px 15px rgba(15, 240, 252, 0.1);
+        }
+
+        .ocean-theme .result-section {
+            background: #caf0f8;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.1);
+        }
+
+        .sunset-theme .result-section {
+            background: #f8f1e5;
+            box-shadow: 0 4px 15px rgba(255, 126, 95, 0.1);
+        }
+
+        .royal-theme .result-section {
+            background: #f8f1ff;
+            box-shadow: 0 4px 15px rgba(106, 48, 147, 0.1);
+        }
+
+        .minimal-theme .result-section {
+            background: #f9f9f9;
+            box-shadow: 0 4px 15px rgba(51, 51, 51, 0.1);
+        }
+
+        .result-section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .neon-theme .result-section:hover {
+            box-shadow: 0 10px 30px rgba(15, 240, 252, 0.2);
+        }
+
+        .ocean-theme .result-section:hover {
+            box-shadow: 0 10px 30px rgba(0, 180, 216, 0.2);
+        }
+
+        .sunset-theme .result-section:hover {
+            box-shadow: 0 10px 30px rgba(255, 126, 95, 0.2);
+        }
+
+        .royal-theme .result-section:hover {
+            box-shadow: 0 10px 30px rgba(106, 48, 147, 0.2);
+        }
+
+        .minimal-theme .result-section:hover {
+            box-shadow: 0 10px 30px rgba(51, 51, 51, 0.2);
+        }
+
+        .result-image-container {
+            max-width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .result-image-container img {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .result-image-container img {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .neon-theme .result-image-container img {
+            box-shadow: 0 5px 15px rgba(15, 240, 252, 0.1);
+        }
+
+        .ocean-theme .result-image-container img {
+            box-shadow: 0 5px 15px rgba(0, 180, 216, 0.1);
+        }
+
+        .sunset-theme .result-image-container img {
+            box-shadow: 0 5px 15px rgba(255, 126, 95, 0.1);
+        }
+
+        .royal-theme .result-image-container img {
+            box-shadow: 0 5px 15px rgba(106, 48, 147, 0.1);
+        }
+
+        .minimal-theme .result-image-container img {
+            box-shadow: 0 5px 15px rgba(51, 51, 51, 0.1);
+        }
+
+        .result-image-container:hover img {
+            transform: scale(1.02);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .neon-theme .result-image-container:hover img {
+            box-shadow: 0 10px 25px rgba(15, 240, 252, 0.2);
+        }
+
+        .ocean-theme .result-image-container:hover img {
+            box-shadow: 0 10px 25px rgba(0, 180, 216, 0.2);
+        }
+
+        .sunset-theme .result-image-container:hover img {
+            box-shadow: 0 10px 25px rgba(255, 126, 95, 0.2);
+        }
+
+        .royal-theme .result-image-container:hover img {
+            box-shadow: 0 10px 25px rgba(106, 48, 147, 0.2);
+        }
+
+        .minimal-theme .result-image-container:hover img {
+            box-shadow: 0 10px 25px rgba(51, 51, 51, 0.2);
+        }
+
+        .result-details p {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .result-details p::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+
+        .result-details strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .recommendations, .precautions {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .recommendations,
+        .dark-theme .precautions {
+            background: #2a2a2a;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .neon-theme .recommendations,
+        .neon-theme .precautions {
+            background: #1e1e2e;
+            box-shadow: 0 4px 10px rgba(15, 240, 252, 0.1);
+        }
+
+        .ocean-theme .recommendations,
+        .ocean-theme .precautions {
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 180, 216, 0.1);
+        }
+
+        .sunset-theme .recommendations,
+        .sunset-theme .precautions {
+            background: white;
+            box-shadow: 0 4px 10px rgba(255, 126, 95, 0.1);
+        }
+
+        .royal-theme .recommendations,
+        .royal-theme .precautions {
+            background: white;
+            box-shadow: 0 4px 10px rgba(106, 48, 147, 0.1);
+        }
+
+        .minimal-theme .recommendations,
+        .minimal-theme .precautions {
+            background: white;
+            box-shadow: 0 4px 10px rgba(51, 51, 51, 0.1);
+        }
+
+        .recommendations:hover, .precautions:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .neon-theme .recommendations:hover,
+        .neon-theme .precautions:hover {
+            box-shadow: 0 8px 20px rgba(15, 240, 252, 0.2);
+        }
+
+        .ocean-theme .recommendations:hover,
+        .ocean-theme .precautions:hover {
+            box-shadow: 0 8px 20px rgba(0, 180, 216, 0.2);
+        }
+
+        .sunset-theme .recommendations:hover,
+        .sunset-theme .precautions:hover {
+            box-shadow: 0 8px 20px rgba(255, 126, 95, 0.2);
+        }
+
+        .royal-theme .recommendations:hover,
+        .royal-theme .precautions:hover {
+            box-shadow: 0 8px 20px rgba(106, 48, 147, 0.2);
+        }
+
+        .minimal-theme .recommendations:hover,
+        .minimal-theme .precautions:hover {
+            box-shadow: 0 8px 20px rgba(51, 51, 51, 0.2);
+        }
+
+        .recommendations h3, .precautions h3 {
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .recommendations h3 i, .precautions h3 i {
+            margin-right: 10px;
+        }
+
+        .recommendations ul, .precautions ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .recommendations li, .precautions li {
+            padding-left: 25px;
+            position: relative;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .recommendations li::before, .precautions li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* How It Works */
+        .step-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark-theme .step-card {
+            background: #2a2a2a;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .neon-theme .step-card {
+            background: #1e1e2e;
+            box-shadow: 0 4px 15px rgba(15, 240, 252, 0.1);
+        }
+
+        .ocean-theme .step-card {
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.1);
+        }
+
+        .sunset-theme .step-card {
+            background: white;
+            box-shadow: 0 4px 15px rgba(255, 126, 95, 0.1);
+        }
+
+        .royal-theme .step-card {
+            background: white;
+            box-shadow: 0 4px 15px rgba(106, 48, 147, 0.1);
+        }
+
+        .minimal-theme .step-card {
+            background: white;
+            box-shadow: 0 4px 15px rgba(51, 51, 51, 0.1);
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .neon-theme .step-card:hover {
+            box-shadow: 0 15px 30px rgba(15, 240, 252, 0.2);
+        }
+
+        .ocean-theme .step-card:hover {
+            box-shadow: 0 15px 30px rgba(0, 180, 216, 0.2);
+        }
+
+        .sunset-theme .step-card:hover {
+            box-shadow: 0 15px 30px rgba(255, 126, 95, 0.2);
+        }
+
+        .royal-theme .step-card:hover {
+            box-shadow: 0 15px 30px rgba(106, 48, 147, 0.2);
+        }
+
+        .minimal-theme .step-card:hover {
+            box-shadow: 0 15px 30px rgba(51, 51, 51, 0.2);
+        }
+
+        .step-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* Team Section */
+        .team-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            text-align: center;
+            height: 100%;
+        }
+
+        .dark-theme .team-card {
+            background: #2a2a2a;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .neon-theme .team-card {
+            background: #1e1e2e;
+            box-shadow: 0 4px 15px rgba(15, 240, 252, 0.1);
+        }
+
+        .ocean-theme .team-card {
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.1);
+        }
+
+        .sunset-theme .team-card {
+            background: white;
+            box-shadow: 0 4px 15px rgba(255, 126, 95, 0.1);
+        }
+
+        .royal-theme .team-card {
+            background: white;
+            box-shadow: 0 4px 15px rgba(106, 48, 147, 0.1);
+        }
+
+        .minimal-theme .team-card {
+            background: white;
+            box-shadow: 0 4px 15px rgba(51, 51, 51, 0.1);
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .neon-theme .team-card:hover {
+            box-shadow: 0 15px 30px rgba(15, 240, 252, 0.2);
+        }
+
+        .ocean-theme .team-card:hover {
+            box-shadow: 0 15px 30px rgba(0, 180, 216, 0.2);
+        }
+
+        .sunset-theme .team-card:hover {
+            box-shadow: 0 15px 30px rgba(255, 126, 95, 0.2);
+        }
+
+        .royal-theme .team-card:hover {
+            box-shadow: 0 15px 30px rgba(106, 48, 147, 0.2);
+        }
+
+        .minimal-theme .team-card:hover {
+            box-shadow: 0 15px 30px rgba(51, 51, 51, 0.2);
+        }
+
+        .team-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            margin: 0 auto 15px;
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover .team-img {
+            transform: scale(1.1);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 60px 0 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' fill='%23f8f9fc' opacity='.25'/%3E%3Cpath d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' fill='%23f8f9fc' opacity='.5'/%3E%3Cpath d='M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z' fill='%23f8f9fc'/%3E%3C/svg%3E");
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .social-icon {
+            display: inline-flex;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px) scale(1.1);
+        }
+
+        /* Theme Switcher */
+        .theme-switcher {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-default {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .theme-dark {
+            background: linear-gradient(135deg, #121212, #333);
+        }
+
+        .theme-neon {
+            background: linear-gradient(135deg, #0ff0fc, #07b6d4);
+        }
+
+        .theme-ocean {
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+        }
+
+        .theme-sunset {
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+        }
+
+        .theme-royal {
+            background: linear-gradient(135deg, #6a3093, #a044ff);
+        }
+
+        .theme-minimal {
+            background: linear-gradient(135deg, #333333, #666666);
+        }
+
+        /* Floating AI Assistant */
+        .ai-assistant {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .ai-assistant:hover {
+            transform: scale(1.1);
+        }
+
+        .ai-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        /* Chat Modal */
+        .chat-modal {
+            position: fixed;
+            bottom: 180px;
+            right: 30px;
+            width: 350px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            transform: translateY(20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .chat-modal {
+            background: #2a2a2a;
+        }
+
+        .neon-theme .chat-modal {
+            background: #1e1e2e;
+            box-shadow: 0 10px 30px rgba(15, 240, 252, 0.2);
+        }
+
+        .ocean-theme .chat-modal {
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 180, 216, 0.2);
+        }
+
+        .sunset-theme .chat-modal {
+            background: white;
+            box-shadow: 0 10px 30px rgba(255, 126, 95, 0.2);
+        }
+
+        .royal-theme .chat-modal {
+            background: white;
+            box-shadow: 0 10px 30px rgba(106, 48, 147, 0.2);
+        }
+
+        .minimal-theme .chat-modal {
+            background: white;
+            box-shadow: 0 10px 30px rgba(51, 51, 51, 0.2);
+        }
+
+        .chat-modal.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .chat-header {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-weight: 500;
+            flex-grow: 1;
+        }
+
+        .close-chat {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .chat-body {
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+
+        .chat-message.ai {
+            justify-content: flex-start;
+        }
+
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .ai .message-content {
+            background: #f0f4f8;
+            border-top-left-radius: 5px;
+        }
+
+        .dark-theme .ai .message-content {
+            background: #333;
+            color: var(--text-light);
+        }
+
+        .neon-theme .ai .message-content {
+            background: #2a2a3a;
+            color: var(--text-light);
+        }
+
+        .ocean-theme .ai .message-content {
+            background: #e6f7ff;
+            color: var(--text-color);
+        }
+
+        .sunset-theme .ai .message-content {
+            background: #fff5f0;
+            color: var(--text-color);
+        }
+
+        .royal-theme .ai .message-content {
+            background: #f5f0ff;
+            color: var(--text-color);
+        }
+
+        .minimal-theme .ai .message-content {
+            background: #f0f0f0;
+            color: var(--text-color);
+        }
+
+        .user .message-content {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-top-right-radius: 5px;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .dark-theme .chat-input {
+            border-top-color: #444;
+        }
+
+        .neon-theme .chat-input {
+            border-top-color: rgba(15, 240, 252, 0.2);
+        }
+
+        .ocean-theme .chat-input {
+            border-top-color: rgba(0, 180, 216, 0.2);
+        }
+
+        .sunset-theme .chat-input {
+            border-top-color: rgba(255, 126, 95, 0.2);
+        }
+
+        .royal-theme .chat-input {
+            border-top-color: rgba(106, 48, 147, 0.2);
+        }
+
+        .minimal-theme .chat-input {
+            border-top-color: rgba(51, 51, 51, 0.2);
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            margin-right: 10px;
+            outline: none;
+        }
+
+        .dark-theme .chat-input input {
+            background: #333;
+            border-color: #444;
+            color: var(--text-light);
+        }
+
+        .neon-theme .chat-input input {
+            background: #2a2a3a;
+            border-color: rgba(15, 240, 252, 0.3);
+            color: var(--text-light);
+        }
+
+        .ocean-theme .chat-input input {
+            background: white;
+            border-color: rgba(0, 180, 216, 0.3);
+            color: var(--text-color);
+        }
+
+        .sunset-theme .chat-input input {
+            background: white;
+            border-color: rgba(255, 126, 95, 0.3);
+            color: var(--text-color);
+        }
+
+        .royal-theme .chat-input input {
+            background: white;
+            border-color: rgba(106, 48, 147, 0.3);
+            color: var(--text-color);
+        }
+
+        .minimal-theme .chat-input input {
+            background: white;
+            border-color: rgba(51, 51, 51, 0.3);
+            color: var(--text-color);
+        }
+
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* AI Assistant Chat Box */
+        .ai-assistant-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .ai-assistant-box {
+            background: #2a2a2a;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .neon-theme .ai-assistant-box {
+            background: #1e1e2e;
+            box-shadow: 0 4px 15px rgba(15, 240, 252, 0.1);
+        }
+
+        .ocean-theme .ai-assistant-box {
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.1);
+        }
+
+        .sunset-theme .ai-assistant-box {
+            background: white;
+            box-shadow: 0 4px 15px rgba(255, 126, 95, 0.1);
+        }
+
+        .royal-theme .ai-assistant-box {
+            background: white;
+            box-shadow: 0 4px 15px rgba(106, 48, 147, 0.1);
+        }
+
+        .minimal-theme .ai-assistant-box {
+            background: white;
+            box-shadow: 0 4px 15px rgba(51, 51, 51, 0.1);
+        }
+
+        .ai-assistant-box h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .ai-assistant-box h3 i {
+            margin-right: 10px;
+        }
+
+        #chat-box {
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+        }
+
+        .dark-theme #chat-box {
+            background: #333;
+            border-color: #444;
+        }
+
+        .neon-theme #chat-box {
+            background: #2a2a3a;
+            border-color: rgba(15, 240, 252, 0.3);
+        }
+
+        .ocean-theme #chat-box {
+            background: #e6f7ff;
+            border-color: rgba(0, 180, 216, 0.3);
+        }
+
+        .sunset-theme #chat-box {
+            background: #fff5f0;
+            border-color: rgba(255, 126, 95, 0.3);
+        }
+
+        .royal-theme #chat-box {
+            background: #f5f0ff;
+            border-color: rgba(106, 48, 147, 0.3);
+        }
+
+        .minimal-theme #chat-box {
+            background: #f0f0f0;
+            border-color: rgba(51, 51, 51, 0.3);
+        }
+
+        #chat-box p {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+
+        #chat-box p strong {
+            color: var(--primary-color);
+        }
+
+        #chat-box p:nth-child(odd) {
+            background: rgba(46, 204, 113, 0.1);
+            margin-right: auto;
+            border-top-left-radius: 5px;
+        }
+
+        .neon-theme #chat-box p:nth-child(odd) {
+            background: rgba(15, 240, 252, 0.1);
+        }
+
+        .ocean-theme #chat-box p:nth-child(odd) {
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        .sunset-theme #chat-box p:nth-child(odd) {
+            background: rgba(255, 126, 95, 0.1);
+        }
+
+        .royal-theme #chat-box p:nth-child(odd) {
+            background: rgba(106, 48, 147, 0.1);
+        }
+
+        .minimal-theme #chat-box p:nth-child(odd) {
+            background: rgba(51, 51, 51, 0.1);
+        }
+
+        #chat-box p:nth-child(even) {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            margin-left: auto;
+            border-top-right-radius: 5px;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.2; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .intro-title {
+                font-size: 2.5rem;
+            }
+
+            .intro-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .nav-tabs .nav-link {
+                min-width: auto;
+                padding: 10px 5px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .intro-title {
+                font-size: 2rem;
+            }
+
+            .intro-subtitle {
+                font-size: 1rem;
+            }
+
+            .nav-tabs .nav-link {
+                font-size: 0.9rem;
+                padding: 10px 5px;
+            }
+
+            .main-container {
+                padding: 20px;
+                margin: 15px auto;
+            }
+
+            .chat-modal {
+                width: calc(100% - 60px);
+                right: 30px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .intro-title {
+                font-size: 1.8rem;
+            }
+
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .nav-tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                justify-content: flex-start;
+            }
+
+            .nav-tabs .nav-link {
+                font-size: 0.8rem;
+                padding: 8px 2px;
+                min-width: 120px;
+            }
+
+            .tab-caption {
+                font-size: 0.7rem;
+            }
+
+            .theme-switcher {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .ai-assistant {
+                bottom: 90px;
+                right: 20px;
+            }
+
+            .chat-modal {
+                bottom: 160px;
+                right: 20px;
+                width: calc(100% - 40px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Clock Display -->
+    <div class="clock-container">
+        <div class="time" id="time"></div>
+        <div class="date" id="date"></div>
+    </div>
+
+    <!-- Cinematic Intro -->
+    <div class="intro-overlay animate__animated animate__fadeOut animate__delay-3s">
+        <div class="intro-logo animate__animated animate__fadeInDown animate__delay-0.5s">
+            <i class="fas fa-stethoscope"></i>
+        </div>
+        <h1 class="intro-title animate__animated animate__fadeInUp animate__delay-1s">MediXpert</h1>
+        <p class="intro-subtitle animate__animated animate__fadeInUp animate__delay-1.5s">AI-Powered Medical Image Analysis</p>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h4>Analyzing Image</h4>
+            <p>Please wait while our AI processes your medical image...</p>
+            <div class="progress mt-3">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-stethoscope"></i> MediXpert
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#team">Team</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-palette"></i> Theme
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('default')"><i class="fas fa-leaf me-2"></i> Default</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('dark')"><i class="fas fa-moon me-2"></i> Dark</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('neon')"><i class="fas fa-lightbulb me-2"></i> Neon</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('ocean')"><i class="fas fa-water me-2"></i> Ocean</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('sunset')"><i class="fas fa-sun me-2"></i> Sunset</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('royal')"><i class="fas fa-crown me-2"></i> Royal</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('minimal')"><i class="fas fa-minimize me-2"></i> Minimal</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="main-container" id="home">
+            <h1 class="section-title text-center mb-3" data-aos="fade-up">
+                <i class="fas fa-stethoscope"></i> MediXpert - AI Medical Image Detection
+            </h1>
+            <p class="text-center mb-5" data-aos="fade-up" data-aos-delay="100">
+                Empowering healthcare with AI-driven insights for faster, accurate medical image analysis.
+                Upload your scans to detect brain tumors, pneumonia, or bone fractures with our advanced AI technology.
+            </p>
+
+            <!-- Tabs for Detection Types -->
+            <ul class="nav nav-tabs" id="myTab" role="tablist" data-aos="fade-up" data-aos-delay="200">
+                                    <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="brain-tab" data-bs-toggle="tab" data-bs-target="#brain" type="button" role="tab">
+                        <i class="fas fa-brain me-2"></i> Brain Tumor
+                        <span class="tab-caption">MRI Scan Analysis</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="lungs-tab" data-bs-toggle="tab" data-bs-target="#lungs" type="button" role="tab">
+                        <i class="fas fa-lungs me-2"></i> Pneumonia
+                        <span class="tab-caption">Chest X-Ray Analysis</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="bone-tab" data-bs-toggle="tab" data-bs-target="#bone" type="button" role="tab">
+                        <i class="fas fa-bone me-2"></i> Bone Fracture
+                        <span class="tab-caption">X-Ray Analysis</span>
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="myTabContent">
+                <!-- Brain Tumor Detection -->
+                <div class="tab-pane fade show active" id="brain" role="tabpanel" aria-labelledby="brain-tab" data-aos="fade-up">
+                    <h2 class="section-title mt-4">
+                        <i class="fas fa-brain"></i> Brain Tumor Detection
+                    </h2>
+                    <p class="mb-4">Detect brain tumors with precision using our advanced AI algorithms. Upload an MRI scan to analyze for potential abnormalities.</p>
+
+                    <div class="row">
+                        <div class="col-lg-6 mb-4" data-aos="fade-right" data-aos-delay="100">
+                            <div class="upload-section">
+                                <form action="/upload_brain" method="post" enctype="multipart/form-data" id="brainForm">
+                                    <input type="file" class="form-control" name="file" id="brain_file" required onchange="previewImage(event, 'brain_preview')">
+                                    <button type="submit" class="btn btn-primary mt-3" onclick="showLoading()">
+                                        <i class="fas fa-search me-2"></i> Analyze Brain Scan
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-4" data-aos="fade-left" data-aos-delay="100">
+                            <div class="image-preview" id="brain_preview">
+                                <p class="text-muted">No image selected</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pneumonia Detection -->
+                <div class="tab-pane fade" id="lungs" role="tabpanel" aria-labelledby="lungs-tab" data-aos="fade-up">
+                    <h2 class="section-title mt-4">
+                        <i class="fas fa-lungs"></i> Pneumonia Detection
+                    </h2>
+                    <p class="mb-4">Identify pneumonia in lung X-rays with cutting-edge AI technology. Upload a chest X-ray to check for signs of pneumonia.</p>
+
+                    <div class="row">
+                        <div class="col-lg-6 mb-4" data-aos="fade-right" data-aos-delay="100">
+                            <div class="upload-section">
+                                <form action="/upload_lungs" method="post" enctype="multipart/form-data" id="lungsForm">
+                                    <input type="file" class="form-control" name="file" id="lungs_file" required onchange="previewImage(event, 'lungs_preview')">
+                                    <button type="submit" class="btn btn-primary mt-3" onclick="showLoading()">
+                                        <i class="fas fa-search me-2"></i> Analyze Lung X-Ray
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-4" data-aos="fade-left" data-aos-delay="100">
+                            <div class="image-preview" id="lungs_preview">
+                                <p class="text-muted">No image selected</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bone Fracture Detection -->
+                <div class="tab-pane fade" id="bone" role="tabpanel" aria-labelledby="bone-tab" data-aos="fade-up">
+                    <h2 class="section-title mt-4">
+                        <i class="fas fa-bone"></i> Bone Fracture Detection
+                    </h2>
+                    <p class="mb-4">Detect fractures in bone X-rays with AI-powered accuracy. Upload an X-ray image to analyze for potential fractures.</p>
+
+                    <div class="row">
+                        <div class="col-lg-6 mb-4" data-aos="fade-right" data-aos-delay="100">
+                            <div class="upload-section">
+                                <form action="/upload_bone" method="post" enctype="multipart/form-data" id="boneForm">
+                                    <input type="file" class="form-control" name="file" id="bone_file" required onchange="previewImage(event, 'bone_preview')">
+                                    <button type="submit" class="btn btn-primary mt-3" onclick="showLoading()">
+                                        <i class="fas fa-search me-2"></i> Analyze Bone X-Ray
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-4" data-aos="fade-left" data-aos-delay="100">
+                            <div class="image-preview" id="bone_preview">
+                                <p class="text-muted">No image selected</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div class="result-section" id="result" data-aos="fade-up">
+                <h2 class="section-title">
+                    <i class="fas fa-check-circle"></i> Detection Result
+                </h2>
+                <div class="row">
+                    {% if message %}
+                        <div class="col-lg-5 mb-4" data-aos="fade-right">
+                            <div class="result-image-container">
+                                <img src="{{ image_url }}" alt="Uploaded Image" class="img-fluid">
+                            </div>
+                        </div>
+                        <div class="col-lg-7" data-aos="fade-left">
+                            <div class="result-details">
+                                <p><strong>Analysis:</strong> {{ message }}</p>
+                                <p><strong>Accuracy:</strong> {{ accuracy }}%</p>
+                                <p><strong>Damage Percentage:</strong> {{ damage_percentage }}%</p>
+                                <p><strong>Health Status:</strong> {{ health_status }}</p>
+
+                                <div class="recommendations">
+                                    <h3><i class="fas fa-clipboard-list me-2"></i> Recommendations:</h3>
+                                    <ul>
+                                        {% for recommendation in recommendations %}
+                                            <li>{{ recommendation }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+
+                                <div class="precautions">
+                                    <h3><i class="fas fa-shield-alt me-2"></i> Precautions:</h3>
+                                    <ul>
+                                        {% for precaution in precautions %}
+                                            <li>{{ precaution }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+
+                                <!-- AI Assistant Chat Box -->
+                                <div class="ai-assistant-box">
+                                    <h3><i class="fas fa-robot me-2"></i>AI Assistant</h3>
+                                    <div id="chat-box"></div>
+                                    <div class="input-group">
+                                        <input type="text" id="user-query" placeholder="Ask about your diagnosis..." class="form-control">
+                                        <button onclick="askAI()" class="btn btn-primary">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="col-12">
+                            <p class="text-center">No result available yet. Upload an image to get started.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- How It Works Section -->
+            <div class="how-it-works mt-5" id="how-it-works" data-aos="fade-up">
+                <h2 class="section-title text-center mb-5">
+                    <i class="fas fa-cogs"></i> How It Works
+                </h2>
+                <div class="row">
+                    <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h3>Upload Image</h3>
+                            <p>Upload your medical scan (MRI, X-Ray, etc.) using our simple upload interface.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h3>AI Analysis</h3>
+                            <p>Our advanced AI algorithms analyze the image to detect abnormalities or conditions.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h3>Get Results</h3>
+                            <p>Receive a detailed report with insights and recommendations based on the analysis.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Section -->
+            <div class="team-section mt-5" id="team" data-aos="fade-up">
+                <h2 class="section-title text-center mb-5">
+                    <i class="fas fa-users"></i> Our Team
+                </h2>
+                <div class="row">
+                    <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                        <div class="team-card">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Team Member" class="team-img">
+                            <h3>Lokeshwar</h3>
+                            <p class="text-muted">Lead Developer</p>
+                            <div class="mt-3">
+                                <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-github"></i></a>
+                                <a href="#" class="social-icon"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="team-card">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Team Member" class="team-img">
+                            <h3>Sushma</h3>
+                            <p class="text-muted">AI Specialist</p>
+                            <div class="mt-3">
+                                <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-github"></i></a>
+                                <a href="#" class="social-icon"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                        <div class="team-card">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Team Member" class="team-img">
+                            <h3>Deekshitha</h3>
+                            <p class="text-muted">UI/UX Designer</p>
+                            <div class="mt-3">
+                                <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-github"></i></a>
+                                <a href="#" class="social-icon"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Section -->
+            <div class="about-section mt-5" id="about" data-aos="fade-up">
+                <h2 class="section-title text-center mb-4">
+                    <i class="fas fa-info-circle"></i> About Us
+                </h2>
+                <p class="text-center mb-4">
+                    MediXpert is a cutting-edge platform that leverages artificial intelligence to provide accurate and fast medical image analysis. Our mission is to empower healthcare professionals with AI-driven insights to improve patient outcomes.
+                </p>
+                <div class="row mt-5">
+                    <div class="col-md-6 mb-4" data-aos="fade-right">
+                        <div class="step-card h-100">
+                            <h3><i class="fas fa-bullseye me-2"></i> Our Mission</h3>
+                            <p>To revolutionize healthcare diagnostics through AI-powered image analysis, making accurate medical assessments accessible to everyone.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4" data-aos="fade-left">
+                        <div class="step-card h-100">
+                            <h3><i class="fas fa-chart-line me-2"></i> Our Vision</h3>
+                            <p>To become the global leader in AI medical diagnostics, setting new standards for accuracy, speed, and accessibility in healthcare.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="contact-section mt-5" id="contact" data-aos="fade-up">
+                <h2 class="section-title text-center mb-5">
+                    <i class="fas fa-envelope"></i> Contact Us
+                </h2>
+                <div class="row">
+                    <div class="col-lg-6 mb-4" data-aos="fade-right">
+                        <div class="step-card h-100">
+                            <h3><i class="fas fa-paper-plane me-2"></i> Get In Touch</h3>
+                            <p>If you have any questions or need support, feel free to reach out to us:</p>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="fas fa-envelope me-2"></i> info@medixpert.com</li>
+                                <li class="mb-2"><i class="fas fa-phone me-2"></i> +1 (123) 456-7890</li>
+                                <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> 123 Healthcare St, AI City, USA</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4" data-aos="fade-left">
+                        <div class="step-card h-100">
+                            <h3><i class="fas fa-comment me-2"></i> Send Us a Message</h3>
+                            <form>
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Your Name">
+                                </div>
+                                <div class="mb-3">
+                                    <input type="email" class="form-control" placeholder="Your Email">
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" rows="3" placeholder="Your Message"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-2"></i> Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-5">
+        <div class="container text-center">
+            <div class="social-icons mb-4">
+                <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p class="mb-3">&copy; 2023 MediXpert. All rights reserved.</p>
+            <p class="mb-0">Empowering healthcare with AI</p>
+        </div>
+    </footer>
+
+    <!-- AI Assistant -->
+    <div class="ai-assistant" onclick="toggleChat()">
+        <div class="ai-pulse"></div>
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <!-- AI Chat Modal -->
+    <div class="chat-modal" id="chatModal">
+        <div class="chat-header">
+            <i class="fas fa-robot"></i>
+            <div class="chat-title">MediXpert AI Assistant</div>
+            <button class="close-chat" onclick="toggleChat()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chat-body">
+            <div class="chat-message ai">
+                <div class="message-content">
+                    Hello! I'm your MediXpert AI Assistant. How can I help you today?
+                </div>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" placeholder="Type your question...">
+            <button class="send-btn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS (Animate On Scroll) -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- GSAP for advanced animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <!-- Google API for chatbot -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Remove intro overlay after animation
+        setTimeout(() => {
+            document.querySelector('.intro-overlay').style.display = 'none';
+        }, 3500);
+
+        // Clock functionality
+        function updateClock() {
+            const now = new Date();
+            const timeElement = document.getElementById('time');
+            const dateElement = document.getElementById('date');
+
+            // Format time
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            timeElement.textContent = `${hours}:${minutes}:${seconds}`;
+
+            // Format date
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.textContent = now.toLocaleDateString(undefined, options);
+        }
+
+        // Update clock every second
+        setInterval(updateClock, 1000);
+        updateClock(); // Initial call
+
+        // Preview image function
+        function previewImage(event, previewId) {
+            const file = event.target.files[0];
+            const preview = document.getElementById(previewId);
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Uploaded Image" class="img-fluid">`;
+                    // Add animation to the preview
+                    preview.querySelector('img').style.animation = "fadeIn 0.6s ease-out";
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = `<p class="text-muted">No image selected</p>`;
+            }
+        }
+
+        // Theme switching function
+        function setTheme(themeName) {
+            document.documentElement.className = themeName + '-theme';
+            localStorage.setItem('theme', themeName);
+
+            // Update the body class for theme-specific styling
+            document.body.className = themeName + '-theme';
+        }
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'default';
+        setTheme(savedTheme);
+
+        // Show loading overlay with progress animation
+        function showLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const progressBar = document.querySelector('.progress-bar');
+
+            // Show loading overlay
+            loadingOverlay.classList.add('active');
+
+            // Reset progress bar
+            progressBar.style.width = '0%';
+
+            // Simulate progress
+            let progress = 0;
+            const duration = 3000 + Math.random() * 2000; // 3-5 seconds
+            const interval = 50;
+            const increment = (interval / duration) * 100;
+
+            const progressInterval = setInterval(() => {
+                progress += increment;
+                progressBar.style.width = `${Math.min(progress, 100)}%`;
+
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    // Hide loading overlay after completion
+                    setTimeout(() => {
+                        loadingOverlay.classList.remove('active');
+                        // Submit the form after loading completes
+                        submitForm();
+                    }, 300);
+                }
+            }, interval);
+        }
+
+        // Function to submit the form after loading
+        function submitForm() {
+            // Determine which form was clicked
+            let activeTab = document.querySelector('.nav-tabs .nav-link.active');
+            let formId;
+
+            if (activeTab.id === 'brain-tab') {
+                formId = 'brainForm';
+            } else if (activeTab.id === 'lungs-tab') {
+                formId = 'lungsForm';
+            } else if (activeTab.id === 'bone-tab') {
+                formId = 'boneForm';
+            }
+
+            // Submit the form
+            if (formId) {
+                document.getElementById(formId).submit();
+            }
+        }
+
+        // AI Assistant functions
+        function toggleChat() {
+            document.getElementById('chatModal').classList.toggle('active');
+        }
+
+        // Initialize Google API for chatbot
+        function initGoogleAPI() {
+            gapi.load('client:auth2', function() {
+                gapi.client.init({
+                    'apiKey': 'AIzaSyAacB_Hx8-UbU8ASiDtA-HSHPsndXdbDdU',
+                    'discoveryDocs': ['https://healthcare.googleapis.com/$discovery/rest?version=v1'],
+                }).then(function() {
+                    console.log('Google API initialized');
+                });
+            });
+        }
+
+        // Load Google API when window loads
+        window.onload = function() {
+            initGoogleAPI();
+        };
+
+        // Animate the AI assistant
+        gsap.to(".ai-assistant", {
+            y: -10,
+            duration: 1.5,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+        });
+
+        // Add pulse effect to AI assistant
+        const pulse = document.querySelector('.ai-pulse');
+        setInterval(() => {
+            pulse.style.transform = 'scale(1.5)';
+            pulse.style.opacity = '0';
+            setTimeout(() => {
+                pulse.style.transform = 'scale(1)';
+                pulse.style.opacity = '0.5';
+            }, 1000);
+        }, 2000);
+
+        // Make navbar solid after scrolling
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('navbar-solid');
+            } else {
+                navbar.classList.remove('navbar-solid');
+            }
+        });
+
+        // Chat functionality
+        document.querySelector('.send-btn').addEventListener('click', function() {
+            const input = document.querySelector('.chat-input input');
+            const message = input.value.trim();
+
+            if (message) {
+                // Add user message
+                const chatBody = document.querySelector('.chat-body');
+                const userMessage = document.createElement('div');
+                userMessage.className = 'chat-message user';
+                userMessage.innerHTML = `
+                    <div class="message-content">
+                        ${message}
+                    </div>
+                `;
+                chatBody.appendChild(userMessage);
+
+                // Clear input
+                input.value = '';
+
+                // Scroll to bottom
+                chatBody.scrollTop = chatBody.scrollHeight;
+
+                // Simulate AI response using Google API
+                gapi.client.healthcare.projects.locations.datasets.fhirStores.fhir.search({
+                    parent: 'projects/your-project/locations/your-location/datasets/your-dataset/fhirStores/your-fhir-store',
+                    resourceType: 'Condition'
+                }).then(function(response) {
+                    // Process response and create AI message
+                    const aiResponse = document.createElement('div');
+                    aiResponse.className = 'chat-message ai';
+                    aiResponse.innerHTML = `
+                        <div class="message-content">
+                            Based on medical data analysis: ${JSON.stringify(response.result)}
+                        </div>
+                    `;
+                    chatBody.appendChild(aiResponse);
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                }, function(reason) {
+                    console.error('Error: ' + reason.result.error.message);
+                    // Fallback response if API fails
+                    const aiResponse = document.createElement('div');
+                    aiResponse.className = 'chat-message ai';
+                    aiResponse.innerHTML = `
+                        <div class="message-content">
+                            I'm analyzing your query about "${message}". For medical advice, please consult a healthcare professional.
+                        </div>
+                    `;
+                    chatBody.appendChild(aiResponse);
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                });
+            }
+        });
+
+        // Allow pressing Enter to send message
+        document.querySelector('.chat-input input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.querySelector('.send-btn').click();
+            }
+        });
+
+        // AI Assistant Functionality in Result Section
+        function askAI() {
+            const query = document.getElementById('user-query').value.trim();
+            if (!query) return;
+
+            // Add user message to chat
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML += `<p><strong>You:</strong> ${query}</p>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Clear input
+            document.getElementById('user-query').value = '';
+
+            // Show loading message
+            chatBox.innerHTML += `<p><strong>AI:</strong> <i>Thinking...</i></p>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Send request to server
+            fetch('/ask_ai', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: `query=${encodeURIComponent(query)}`
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Remove loading message and add actual response
+                chatBox.removeChild(chatBox.lastChild);
+                chatBox.innerHTML += `<p><strong>AI:</strong> ${data.response}</p>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                chatBox.removeChild(chatBox.lastChild);
+                chatBox.innerHTML += `<p><strong>AI:</strong> Sorry, I'm having trouble connecting. Please try again later.</p>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        }
+
+        // Allow pressing Enter to send message in result section chat
+        document.getElementById('user-query').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                askAI();
+            }
+        });
+    </script>
+</body>
+</html>
