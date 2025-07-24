@@ -77,27 +77,14 @@ All models were trained using:
    git clone https://github.com/your-username/MediXpert.git
    cd MediXpert
 Install Dependencies
-
-bash
-Copy
-Edit
 pip install -r requirements.txt
 Run the Flask App
 
-bash
-Copy
-Edit
 python app.py
 Open in Browser
 
-cpp
-Copy
-Edit
 http://127.0.0.1:5000
 📁 Project Structure
-php
-Copy
-Edit
 MediXpert/
 │
 ├── app.py                   # Flask main app
@@ -109,8 +96,9 @@ MediXpert/
 ├── uploads/                 # Uploaded images directory
 ├── requirements.txt         # Python dependencies
 └── Web Application Demo Pic.png # Demo screenshot
+
 🙋‍♂️ Developed By
-Lokeshwar L (Lokiee)
+Lokeshwar B.tech(CSE)
 🔗 LinkedIn Profile
 💡 Passionate about healthcare, AI, and impactful problem solving.
 
