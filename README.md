@@ -70,43 +70,78 @@ All models were trained using:
 
 🚀 How to Run MediXpert Locally
 1️⃣ Clone the Repository
+
+
 bash
 Copy
 Edit
 git clone https://github.com/your-username/MediXpert.git
 cd MediXpert
 2️⃣ Install Dependencies
+
+
 bash
 Copy
 Edit
 pip install -r requirements.txt
 3️⃣ Run the Flask Application
+
+
 bash
 Copy
 Edit
 python app.py
 4️⃣ Open in Your Browser
+
+
 cpp
 Copy
 Edit
 http://127.0.0.1:5000
 📁 Project Structure
+
+
 php
 Copy
 Edit
 MediXpert/
 ├── app.py                       # Flask main application
+
+
 ├── model_brain.h5               # Trained model for brain tumor
+
+
 ├── model_pneumonia.h5           # Trained model for pneumonia
+
+
 ├── model_bone.h5                # Trained model for bone fracture
+
+
 ├── static/                      # CSS, JS, and image assets
+
+
 ├── templates/                   # HTML templates (Flask views)
+
+
 ├── uploads/                     # Uploaded images directory
+
+
 ├── requirements.txt             # Python dependencies
+
+
 └── Web Application Demo Pic.png # Demo screenshot used in README
+
+
+
 👨‍💻 Developed By
+
+
 Lokeshwar L (B.Tech CSE)
+
+
 🔗 LinkedIn Profile
+
+
 💡 Passionate about healthcare, AI, and impactful problem solving.
 
 📢 Notes & Credits
