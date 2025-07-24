@@ -1,8 +1,6 @@
 
 # 🧠 MediXpert - AI-Based Medical Diagnostic System
 
-> **“In machine learning, nothing is truly wasted — every failed attempt teaches the model to succeed better.”**
-
 **MediXpert** is a human-friendly, AI-powered medical diagnostic web application that assists in the **detection of brain tumors, pneumonia, and bone fractures** using deep learning models. It simplifies the diagnostic process by providing fast, accurate, and interpretable predictions from medical images.
 
 ---
@@ -70,45 +68,63 @@ All models were trained using:
 
 ---
 
-## 🚀 How to Run MediXpert Locally
-
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/your-username/MediXpert.git
-   cd MediXpert
-📦 Step 1: Install Dependencies
+🚀 How to Run MediXpert Locally
+1️⃣ Clone the Repository
+bash
+Copy
+Edit
+git clone https://github.com/your-username/MediXpert.git
+cd MediXpert
+2️⃣ Install Dependencies
+bash
+Copy
+Edit
 pip install -r requirements.txt
-🧠 Step 2: Run the Flask Application
+3️⃣ Run the Flask Application
+bash
+Copy
+Edit
 python app.py
-🌐 Step 3: Open in Your Browser
-
+4️⃣ Open in Your Browser
+cpp
+Copy
+Edit
 http://127.0.0.1:5000
 📁 Project Structure
+php
+Copy
+Edit
 MediXpert/
-├── app.py                   # Flask main application
-├── model_brain.h5           # Trained model for brain tumor
-├── model_pneumonia.h5       # Trained model for pneumonia
-├── model_bone.h5            # Trained model for bone fracture
-├── static/                  # CSS, JS, and images
-├── templates/               # HTML templates (Flask views)
-├── uploads/                 # Uploaded images directory
-├── requirements.txt         # List of Python dependencies
-└── Web Application Demo Pic.png   # Demo screenshot used in README
-
-🙋‍♂️ Developed By
-Lokeshwar B.tech(CSE)
+├── app.py                       # Flask main application
+├── model_brain.h5               # Trained model for brain tumor
+├── model_pneumonia.h5           # Trained model for pneumonia
+├── model_bone.h5                # Trained model for bone fracture
+├── static/                      # CSS, JS, and image assets
+├── templates/                   # HTML templates (Flask views)
+├── uploads/                     # Uploaded images directory
+├── requirements.txt             # Python dependencies
+└── Web Application Demo Pic.png # Demo screenshot used in README
+👨‍💻 Developed By
+Lokeshwar L (B.Tech CSE)
 🔗 LinkedIn Profile
 💡 Passionate about healthcare, AI, and impactful problem solving.
 
 📢 Notes & Credits
 This project was developed as a research-based diagnostic assistant.
 
-Several variations of models and file versions may exist in the repository.
+Several variations of models and file versions may exist in the repository from past testing and iterations.
 
-The datasets used are publicly available from trusted sources (Kaggle, NIH, MURA).
+Datasets are sourced from trusted public datasets:
+
+Brain Tumor Dataset (Kaggle)
+
+Chest X-ray Dataset (NIH)
+
+MURA Dataset (Stanford)
 
 📜 License
-This project is licensed under the MIT License. You are free to use, modify, and share with attribution.
+This project is licensed under the MIT License.
+You are free to use, modify, and share with attribution.
 
 
 -------------------------------------------------------------------------------
