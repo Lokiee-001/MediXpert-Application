@@ -148,7 +148,8 @@ MediXpert/
 Lokeshwar L (B.Tech CSE)
 
 
-🔗 LinkedIn Profile
+🔗 LinkedIn Profile [LinkedIn](https://www.linkedin.com/in/lam-lokeshwar-730bb12a0/)
+
 
 
 💡 Passionate about healthcare, AI, and impactful problem solving.
@@ -186,7 +187,8 @@ You are free to use, modify, and share with attribution.
 Thank you for exploring MediXpert!
 This project reflects my passion for combining healthcare and artificial intelligence to make diagnostic tools more accessible and intelligent.
 
-If you find this useful or inspiring, feel free to ⭐ star the repository, suggest improvements, or connect with me on LinkedIn.
+If you find this useful or inspiring, feel free to ⭐ star the repository, suggest improvements,  Connect with me on [LinkedIn](https://www.linkedin.com/in/lam-lokeshwar-730bb12a0/)
+.
 
                                                                    
                                                          
