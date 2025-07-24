@@ -76,26 +76,24 @@ All models were trained using:
    ```bash
    git clone https://github.com/your-username/MediXpert.git
    cd MediXpert
-Install Dependencies
+📦 Step 1: Install Dependencies
 pip install -r requirements.txt
-Run the Flask App
-
+🧠 Step 2: Run the Flask Application
 python app.py
-Open in Browser
+🌐 Step 3: Open in Your Browser
 
 http://127.0.0.1:5000
 📁 Project Structure
 MediXpert/
-│
-├── app.py                   # Flask main app
+├── app.py                   # Flask main application
 ├── model_brain.h5           # Trained model for brain tumor
 ├── model_pneumonia.h5       # Trained model for pneumonia
 ├── model_bone.h5            # Trained model for bone fracture
 ├── static/                  # CSS, JS, and images
-├── templates/               # HTML templates
+├── templates/               # HTML templates (Flask views)
 ├── uploads/                 # Uploaded images directory
-├── requirements.txt         # Python dependencies
-└── Web Application Demo Pic.png # Demo screenshot
+├── requirements.txt         # List of Python dependencies
+└── Web Application Demo Pic.png   # Demo screenshot used in README
 
 🙋‍♂️ Developed By
 Lokeshwar B.tech(CSE)
